@@ -1,0 +1,31 @@
+sources = ['git@github.com:CocoaPods/Specs']
+podspec = './StringifyTextField.podspec'
+xcodeproj = 'StringifyTextField.xcodeproj'
+target = 'StringifyTextField'
+
+lane :release do |options|
+	build_version = get_version_number(
+		xcodeproj: xcodeproj,
+		target: target
+	)
+
+	version_bump_podspec(
+		path: podspec,
+		version_number: build_version
+	)
+
+	git_commit(
+		path: podspec,
+		message: "Update #{podspec}",
+		allow_nothing_to_commit: true
+	)
+
+	sh("git tag '#{build_version}'")
+	sh("git push --tags")
+
+	pod_push(
+		path: podspec,
+		verbose: true,
+		allow_warnings: true
+	)
+end
