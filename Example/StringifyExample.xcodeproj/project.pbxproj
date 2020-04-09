@@ -3,17 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06AC50D8CF3AA3D246447BC6 /* Pods_StringifyExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28762E7F99A7F33A4D74A479 /* Pods_StringifyExample.framework */; };
 		1A556D002427C3D800924FAA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A556CFF2427C3D800924FAA /* AppDelegate.swift */; };
 		1A556D042427C3D800924FAA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A556D032427C3D800924FAA /* ViewController.swift */; };
 		1A556D072427C3D800924FAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D052427C3D800924FAA /* Main.storyboard */; };
 		1A556D092427C3DA00924FAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D082427C3DA00924FAA /* Assets.xcassets */; };
 		1A556D0C2427C3DA00924FAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D0A2427C3DA00924FAA /* LaunchScreen.storyboard */; };
-		1AF91809243F9C5C00C0282C /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF91808243F9C5C00C0282C /* StringifyTextField.framework */; };
-		1AF9180A243F9C5C00C0282C /* StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF91808243F9C5C00C0282C /* StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,7 +22,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1AF9180A243F9C5C00C0282C /* StringifyTextField.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -40,6 +38,9 @@
 		1A556D0D2427C3DA00924FAA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A556D1524289B5800924FAA /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF91808243F9C5C00C0282C /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		28762E7F99A7F33A4D74A479 /* Pods_StringifyExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_StringifyExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		518449B0E253FCA973A770A6 /* Pods-StringifyExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StringifyExample.release.xcconfig"; path = "Target Support Files/Pods-StringifyExample/Pods-StringifyExample.release.xcconfig"; sourceTree = "<group>"; };
+		79FDFA88CA53CE46A364CB95 /* Pods-StringifyExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StringifyExample.debug.xcconfig"; path = "Target Support Files/Pods-StringifyExample/Pods-StringifyExample.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AF91809243F9C5C00C0282C /* StringifyTextField.framework in Frameworks */,
+				06AC50D8CF3AA3D246447BC6 /* Pods_StringifyExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +61,7 @@
 				1A556CFE2427C3D800924FAA /* StringifyExample */,
 				1A556CFD2427C3D800924FAA /* Products */,
 				1A556D1424289B5800924FAA /* Frameworks */,
+				C9F645EC50D3D8007956574B /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,8 +91,18 @@
 			children = (
 				1AF91808243F9C5C00C0282C /* StringifyTextField.framework */,
 				1A556D1524289B5800924FAA /* Stringify.framework */,
+				28762E7F99A7F33A4D74A479 /* Pods_StringifyExample.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C9F645EC50D3D8007956574B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				79FDFA88CA53CE46A364CB95 /* Pods-StringifyExample.debug.xcconfig */,
+				518449B0E253FCA973A770A6 /* Pods-StringifyExample.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -100,10 +112,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1A556D102427C3DA00924FAA /* Build configuration list for PBXNativeTarget "StringifyExample" */;
 			buildPhases = (
+				15F130F5360B2CACB4B2A4DB /* [CP] Check Pods Manifest.lock */,
 				1A556CF82427C3D800924FAA /* Sources */,
 				1A556CF92427C3D800924FAA /* Frameworks */,
 				1A556CFA2427C3D800924FAA /* Resources */,
 				1AF9180B243F9C5C00C0282C /* Embed Frameworks */,
+				EA282A210C8808021760FB15 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -159,6 +173,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		15F130F5360B2CACB4B2A4DB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-StringifyExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EA282A210C8808021760FB15 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-StringifyExample/Pods-StringifyExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-StringifyExample/Pods-StringifyExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-StringifyExample/Pods-StringifyExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1A556CF82427C3D800924FAA /* Sources */ = {
@@ -308,6 +364,7 @@
 		};
 		1A556D112427C3DA00924FAA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 79FDFA88CA53CE46A364CB95 /* Pods-StringifyExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -327,6 +384,7 @@
 		};
 		1A556D122427C3DA00924FAA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 518449B0E253FCA973A770A6 /* Pods-StringifyExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
