@@ -1,7 +1,23 @@
 # StringifyTextField
 Custom `UITextField` is based on `Stringify` framework functionality.
 
-`StringifyTextField` is a textfield which can format inputed string with 4 available formats.
+[![Version](https://img.shields.io/cocoapods/v/StringifyTextField)](https://cocoapods.org/pods/StringifyTextField)
+[![License](https://img.shields.io/cocoapods/l/StringifyTextField)](https://raw.githubusercontent.com/NovichenkoAnton/StringifyTextField/master/LICENSE)
+[![Platform](https://img.shields.io/cocoapods/p/StringifyTextField)](https://cocoapods.org/pods/StringifyTextField)
+
+## Requirements
+
+- iOS 10.0+
+
+## Installation
+
+### CocoaPods
+
+StringifyTextField is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your Podfile:
+
+```ruby
+pod 'StringifyTextField', '~> 1.0'
+```
 
 ## Usage
 
@@ -15,6 +31,8 @@ import StringifyTextField
 let manualTextField = StringifyTextField(type: .amount)
 manualTextField.frame = CGRect(x: 20, y: 100, width: 200, height: 40)
 ```
+
+`StringifyTextField` is a textfield which can format inputed string with 4 available formats.
 
 Available formats:
 ```swift
