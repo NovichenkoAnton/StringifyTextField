@@ -1,6 +1,20 @@
 # StringifyTextField
 Custom `UITextField` is based on `Stringify` framework functionality.
 
+## Requirements
+
+- iOS 10.0+
+
+## Installation
+
+### CocoaPods
+
+StringifyTextField is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your Podfile:
+
+```ruby
+pod 'StringifyTextField', '~> 1.0'
+```
+
 ## Usage
 
 ```swift
