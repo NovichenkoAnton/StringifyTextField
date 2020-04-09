@@ -6,7 +6,7 @@ Custom `UITextField` is based on `Stringify` framework functionality.
 ## Usage
 
 ```swift
-import Stringify
+import StringifyTextField
 
 //Connect IBOutlet
 @IBOutlet var stringifyTextField: StringifyTextField!
