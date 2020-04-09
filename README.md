@@ -1,6 +1,10 @@
 # StringifyTextField
 Custom `UITextField` is based on `Stringify` framework functionality.
 
+[![Version](https://img.shields.io/cocoapods/v/StringifyTextField)](https://cocoapods.org/pods/StringifyTextField)
+[![License](https://img.shields.io/cocoapods/l/StringifyTextField)](https://raw.githubusercontent.com/NovichenkoAnton/StringifyTextField/master/LICENSE)
+[![Platform](https://img.shields.io/cocoapods/p/StringifyTextField)](https://cocoapods.org/pods/StringifyTextField)
+
 ## Requirements
 
 - iOS 10.0+
