@@ -1,8 +1,6 @@
 # StringifyTextField
 Custom `UITextField` is based on `Stringify` framework functionality.
 
-`StringifyTextField` is a textfield which can format inputed string with 4 available formats.
-
 ## Usage
 
 ```swift
@@ -15,6 +13,8 @@ import StringifyTextField
 let manualTextField = StringifyTextField(type: .amount)
 manualTextField.frame = CGRect(x: 20, y: 100, width: 200, height: 40)
 ```
+
+`StringifyTextField` is a textfield which can format inputed string with 4 available formats.
 
 Available formats:
 ```swift
