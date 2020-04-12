@@ -467,16 +467,18 @@ private extension StringifyTextField {
 	func activateBottomLine() {
 		colorAnimation.fromValue = underlineLayer.backgroundColor
 		colorAnimation.toValue = lineColorActive.cgColor
-		colorAnimation.duration = 0.1
+		colorAnimation.beginTime = CFTimeInterval(0)
+		colorAnimation.duration = CFTimeInterval(0.2)
 
 		frameAnimation.fromValue = underlineLayer.frame.size.height
 		frameAnimation.toValue = underlineLayer.frame.size.height + 1
-		frameAnimation.duration = 0.1
+		frameAnimation.beginTime = CFTimeInterval(0)
+		frameAnimation.duration = CFTimeInterval(0.2)
 
 		groupAnimation.animations = [colorAnimation, frameAnimation]
-		groupAnimation.duration = 0.2
-		groupAnimation.isRemovedOnCompletion = true
+		groupAnimation.duration = CFTimeInterval(0.2)
 
+		underlineLayer.removeAnimation(forKey: "groupAnimation")
 		underlineLayer.add(groupAnimation, forKey: "groupAnimation")
 
 		underlineLayer.backgroundColor = lineColorActive.cgColor
@@ -486,16 +488,18 @@ private extension StringifyTextField {
 	func deactivateBottomLine() {
 		colorAnimation.fromValue = underlineLayer.backgroundColor
 		colorAnimation.toValue = lineColorDefault.cgColor
-		colorAnimation.duration = 0.1
+		colorAnimation.beginTime = CFTimeInterval(0)
+		colorAnimation.duration = CFTimeInterval(0.1)
 
 		frameAnimation.fromValue = underlineLayer.frame.size.height
 		frameAnimation.toValue = underlineLayer.frame.size.height - 1
-		frameAnimation.duration = 0.1
+		frameAnimation.beginTime = CFTimeInterval(0)
+		frameAnimation.duration = CFTimeInterval(0.1)
 
 		groupAnimation.animations = [colorAnimation, frameAnimation]
-		groupAnimation.duration = 0.2
-		groupAnimation.isRemovedOnCompletion = true
+		groupAnimation.duration = CFTimeInterval(0.2)
 
+		underlineLayer.removeAnimation(forKey: "groupAnimation")
 		underlineLayer.add(groupAnimation, forKey: "groupAnimation")
 
 		underlineLayer.backgroundColor = lineColorDefault.cgColor

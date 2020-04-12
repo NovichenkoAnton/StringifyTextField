@@ -10,6 +10,7 @@
 		1AE9D6D0243F96D4005D66A5 /* StringifyTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AE9D6CE243F96D4005D66A5 /* StringifyTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1AE9D6D3243F96E0005D66A5 /* StringifyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE9D6D2243F96E0005D66A5 /* StringifyTextField.swift */; };
 		1AF9180D243FA64900C0282C /* Stringify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF9180C243FA64900C0282C /* Stringify.framework */; };
+		76AAEE8EA947EC3B6DF1D629 /* Pods_StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55078A633009A0241206513 /* Pods_StringifyTextField.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AF9180D243FA64900C0282C /* Stringify.framework in Frameworks */,
+				76AAEE8EA947EC3B6DF1D629 /* Pods_StringifyTextField.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,7 +334,8 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = by.stringify.StringifyTextField;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -361,7 +364,8 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = by.stringify.StringifyTextField;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
