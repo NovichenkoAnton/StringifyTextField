@@ -467,14 +467,12 @@ private extension StringifyTextField {
 	func activateBottomLine() {
 		colorAnimation.fromValue = underlineLayer.backgroundColor
 		colorAnimation.toValue = lineColorActive.cgColor
-		colorAnimation.duration = CFTimeInterval(0.2)
 
 		frameAnimation.fromValue = underlineLayer.frame.size.height
 		frameAnimation.toValue = underlineLayer.frame.size.height + 1
-		frameAnimation.duration = CFTimeInterval(0.2)
 
 		groupAnimation.animations = [colorAnimation, frameAnimation]
-		groupAnimation.duration = CFTimeInterval(0.2)
+		groupAnimation.duration = 0.2
 
 		underlineLayer.add(groupAnimation, forKey: nil)
 
@@ -485,14 +483,12 @@ private extension StringifyTextField {
 	func deactivateBottomLine() {
 		colorAnimation.fromValue = underlineLayer.backgroundColor
 		colorAnimation.toValue = lineColorDefault.cgColor
-		colorAnimation.duration = CFTimeInterval(0.2)
 
 		frameAnimation.fromValue = underlineLayer.frame.size.height
 		frameAnimation.toValue = underlineLayer.frame.size.height - 1
-		frameAnimation.duration = CFTimeInterval(0.2)
 
 		groupAnimation.animations = [colorAnimation, frameAnimation]
-		groupAnimation.duration = CFTimeInterval(0.2)
+		groupAnimation.duration = 0.2
 
 		underlineLayer.add(groupAnimation, forKey: nil)
 
