@@ -474,6 +474,7 @@ private extension StringifyTextField {
 		groupAnimation.animations = [colorAnimation, frameAnimation]
 		groupAnimation.duration = 0.2
 
+		underlineLayer.removeAllAnimations()
 		underlineLayer.add(groupAnimation, forKey: nil)
 
 		underlineLayer.backgroundColor = lineColorActive.cgColor
@@ -490,6 +491,7 @@ private extension StringifyTextField {
 		groupAnimation.animations = [colorAnimation, frameAnimation]
 		groupAnimation.duration = 0.2
 
+		underlineLayer.removeAllAnimations()
 		underlineLayer.add(groupAnimation, forKey: nil)
 
 		underlineLayer.backgroundColor = lineColorDefault.cgColor
