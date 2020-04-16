@@ -578,13 +578,14 @@ private extension StringifyTextField {
 // MARK: - UITextFieldDelegate
 extension StringifyTextField: UITextFieldDelegate {
 	public func textFieldDidBeginEditing(_ textField: UITextField) {
-		stDelegate?.didBeginEditing(self)
-
 		if lineVisible {
 			activateBottomLine()
 		}
 
-		guard hasText else { return }
+		guard hasText else {
+			stDelegate?.didBeginEditing(self)
+			return
+		}
 
 		switch textType {
 		case .amount:
@@ -592,6 +593,8 @@ extension StringifyTextField: UITextFieldDelegate {
 		default:
 			break
 		}
+
+		stDelegate?.didBeginEditing(self)
 	}
 
 	public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

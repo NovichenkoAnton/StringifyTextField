@@ -13,7 +13,6 @@
 		1A556D092427C3DA00924FAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D082427C3DA00924FAA /* Assets.xcassets */; };
 		1A556D0C2427C3DA00924FAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D0A2427C3DA00924FAA /* LaunchScreen.storyboard */; };
 		1AF0B0F524437E3500526EFC /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF0B0F224437CF100526EFC /* StringifyTextField.framework */; };
-		43B235506F4D318B84FD724B /* Pods_StringifyExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD10DCDB6CB0DED4B85BBE63 /* Pods_StringifyExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,7 +54,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AF0B0F524437E3500526EFC /* StringifyTextField.framework in Frameworks */,
-				43B235506F4D318B84FD724B /* Pods_StringifyExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

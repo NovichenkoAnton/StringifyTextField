@@ -102,11 +102,11 @@ extension ViewController: UITextFieldDelegate {
 // MARK: - StringifyTextFieldDelegate
 extension ViewController: StringifyTextFieldDelegate {
 	func didBeginEditing(_ textField: StringifyTextField) {
-		print("did begin editing")
+		print("did begin editing \(textField.text!)")
 	}
 
 	func didEndEditing(_ textField: StringifyTextField) {
-		print("did end editing")
+		print("did end editing \(textField.text!)")
 	}
 }
 
