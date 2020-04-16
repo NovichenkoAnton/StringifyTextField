@@ -612,13 +612,14 @@ extension StringifyTextField: UITextFieldDelegate {
 	}
 
 	public func textFieldDidEndEditing(_ textField: UITextField) {
-		stDelegate?.didEndEditing(self)
-
 		if lineVisible {
 			deactivateBottomLine()
 		}
 
-		guard hasText else { return }
+		guard hasText else {
+			stDelegate?.didEndEditing(self)
+			return
+		}
 
 		switch textType {
 		case .amount:
@@ -626,6 +627,8 @@ extension StringifyTextField: UITextFieldDelegate {
 		default:
 			break
 		}
+
+		stDelegate?.didEndEditing(self)
 	}
 
 	public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
