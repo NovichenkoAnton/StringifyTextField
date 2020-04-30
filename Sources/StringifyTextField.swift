@@ -432,11 +432,7 @@ private extension StringifyTextField {
 	func expDateCleanValue() -> String {
 		guard let text = self.text else { return "" }
 
-		do {
-			return try text.st.convertDate(from: "MM/yy", to: dateFormat)
-		} catch {
-			return ""
-		}
+		return text.st.convertDate(from: "MM/yy", to: dateFormat) ?? ""
 	}
 
 	func shouldChangeExpDate(in range: NSRange, with string: String, and text: String) -> Bool {
