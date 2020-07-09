@@ -127,6 +127,10 @@ public class StringifyTextField: UITextField {
 	/// Default value is `UIColor.black`.
 	@IBInspectable public var floatingPlaceholderActiveColor: UIColor = UIColor.black
 
+	/// Padding between text rect and floating label
+	/// Default value is 0
+	@IBInspectable public var floatingPadding: CGFloat = 0
+
 	// MARK: - Public properties
 
 	/// Specific `TextType` for formatting text in textfield.
@@ -529,7 +533,7 @@ private extension StringifyTextField {
 		let labelHeight = floatedLabelHeight()
 
 		if hasText {
-			return CGRect(x: 0, y: -9, width: bounds.size.width, height: labelHeight)
+			return CGRect(x: 0, y: -9 - floatingPadding, width: bounds.size.width, height: labelHeight)
 		}
 
 		return CGRect(x: 0, y: bounds.origin.y, width: bounds.size.width, height: labelHeight)
