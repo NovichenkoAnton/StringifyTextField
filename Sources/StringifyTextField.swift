@@ -17,6 +17,14 @@ import Stringify
 	/// Called when editing is end
 	/// - Parameter textField: `StringifyTextField`
 	func didEndEditing(_ textField: StringifyTextField)
+
+	/// Called when text field has max inputed symbols
+	/// - Parameter textField: `StringifyTextField`
+	func textFieldFilled(_ textField: StringifyTextField)
+}
+
+extension StringifyTextFieldDelegate {
+	func textFieldFilled(_ textField: StringifyTextField) {}
 }
 
 public class StringifyTextField: UITextField {
@@ -427,6 +435,10 @@ private extension StringifyTextField {
 			selectedTextRange = textRange(from: location, to: location)
 		}
 
+		if possibleText.count == maxLength {
+			stDelegate?.textFieldFilled(self)
+		}
+
 		return false
 	}
 }
@@ -456,6 +468,10 @@ private extension StringifyTextField {
 
 		if let location = cursorLocation {
 			selectedTextRange = textRange(from: location, to: location)
+		}
+
+		if possibleText.count == 5 {
+			stDelegate?.textFieldFilled(self)
 		}
 
 		return false

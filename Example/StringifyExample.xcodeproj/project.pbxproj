@@ -12,8 +12,8 @@
 		1A556D072427C3D800924FAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D052427C3D800924FAA /* Main.storyboard */; };
 		1A556D092427C3DA00924FAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D082427C3DA00924FAA /* Assets.xcassets */; };
 		1A556D0C2427C3DA00924FAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D0A2427C3DA00924FAA /* LaunchScreen.storyboard */; };
-		1AF0B0F524437E3500526EFC /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF0B0F224437CF100526EFC /* StringifyTextField.framework */; };
-		A2B8235CA845F9589A4663D8 /* Pods_StringifyExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD10DCDB6CB0DED4B85BBE63 /* Pods_StringifyExample.framework */; };
+		1ADEB591251E138B0004B695 /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB590251E138B0004B695 /* StringifyTextField.framework */; };
+		1ADEB592251E138B0004B695 /* StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1ADEB590251E138B0004B695 /* StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,6 +23,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1ADEB592251E138B0004B695 /* StringifyTextField.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -38,6 +39,7 @@
 		1A556D0B2427C3DA00924FAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1A556D0D2427C3DA00924FAA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A556D1524289B5800924FAA /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1ADEB590251E138B0004B695 /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF0B0E624437B7200526EFC /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF0B0E724437B7200526EFC /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF0B0EC24437C8000526EFC /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -54,8 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AF0B0F524437E3500526EFC /* StringifyTextField.framework in Frameworks */,
-				A2B8235CA845F9589A4663D8 /* Pods_StringifyExample.framework in Frameworks */,
+				1ADEB591251E138B0004B695 /* StringifyTextField.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +97,7 @@
 		1A556D1424289B5800924FAA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1ADEB590251E138B0004B695 /* StringifyTextField.framework */,
 				1AF0B0F224437CF100526EFC /* StringifyTextField.framework */,
 				1AF0B0EE24437CE400526EFC /* Stringify.framework */,
 				1AF0B0EC24437C8000526EFC /* StringifyTextField.framework */,
@@ -147,7 +149,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Anton Novichenko";
 				TargetAttributes = {
 					1A556CFB2427C3D800924FAA = {
@@ -286,6 +288,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -310,7 +313,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -346,6 +349,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -364,7 +368,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
