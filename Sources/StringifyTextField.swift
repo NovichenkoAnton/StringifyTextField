@@ -20,11 +20,21 @@ import Stringify
 
 	/// Called when text field has max inputed symbols
 	/// - Parameter textField: `StringifyTextField`
-	func textFieldFilled(_ textField: StringifyTextField)
+	func didFilled(_ textField: StringifyTextField)
+
+	/// Called when text field is changed
+	/// - Parameters:
+	///   - textField: `StringifyTextField`
+	///   - range: The range of characters to be changed
+	///   - string: Replacement string
+	func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String)
 }
 
 extension StringifyTextFieldDelegate {
-	func textFieldFilled(_ textField: StringifyTextField) {}
+	func didBeginEditing(_ textField: StringifyTextField) {}
+	func didEndEditing(_ textField: StringifyTextField) {}
+	func didFilled(_ textField: StringifyTextField) {}
+	func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String) {}
 }
 
 public class StringifyTextField: UITextField {
@@ -436,7 +446,7 @@ private extension StringifyTextField {
 		}
 
 		if possibleText.count == maxLength {
-			stDelegate?.textFieldFilled(self)
+			stDelegate?.didFilled(self)
 		}
 
 		return false
@@ -471,7 +481,7 @@ private extension StringifyTextField {
 		}
 
 		if possibleText.count == 5 {
-			stDelegate?.textFieldFilled(self)
+			stDelegate?.didFilled(self)
 		}
 
 		return false
@@ -615,6 +625,8 @@ extension StringifyTextField: UITextFieldDelegate {
 
 	public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
 		guard let text = textField.text else { return false }
+
+		stDelegate?.didStartChanging(self, in: range, with: string)
 
 		switch textType {
 		case .amount:
