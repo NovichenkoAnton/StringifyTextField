@@ -105,9 +105,9 @@ extension ViewController: StringifyTextFieldDelegate {
 		print("did begin editing \(textField.text!)")
 	}
 
-	func didEndEditing(_ textField: StringifyTextField) {
-		print("did end editing \(textField.text!)")
-	}
+//	func didEndEditing(_ textField: StringifyTextField) {
+//		print("did end editing \(textField.text!)")
+//	}
 
 	func didFilled(_ textField: StringifyTextField) {
 		print("textField filled with text \(textField.text!)")

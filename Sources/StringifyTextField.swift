@@ -12,29 +12,22 @@ import Stringify
 @objc public protocol StringifyTextFieldDelegate: AnyObject {
 	/// Called when editing is begin
 	/// - Parameter textField: `StringifyTextField`
-	func didBeginEditing(_ textField: StringifyTextField)
+	@objc optional func didBeginEditing(_ textField: StringifyTextField)
 
 	/// Called when editing is end
 	/// - Parameter textField: `StringifyTextField`
-	func didEndEditing(_ textField: StringifyTextField)
+	@objc optional func didEndEditing(_ textField: StringifyTextField)
 
 	/// Called when text field has max inputed symbols
 	/// - Parameter textField: `StringifyTextField`
-	func didFilled(_ textField: StringifyTextField)
+	@objc optional func didFilled(_ textField: StringifyTextField)
 
 	/// Called when text field is changed
 	/// - Parameters:
 	///   - textField: `StringifyTextField`
 	///   - range: The range of characters to be changed
 	///   - string: Replacement string
-	func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String)
-}
-
-extension StringifyTextFieldDelegate {
-	func didBeginEditing(_ textField: StringifyTextField) {}
-	func didEndEditing(_ textField: StringifyTextField) {}
-	func didFilled(_ textField: StringifyTextField) {}
-	func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String) {}
+	@objc optional func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String)
 }
 
 public class StringifyTextField: UITextField {
@@ -446,7 +439,7 @@ private extension StringifyTextField {
 		}
 
 		if possibleText.count == maxLength {
-			stDelegate?.didFilled(self)
+			stDelegate?.didFilled?(self)
 		}
 
 		return false
@@ -481,7 +474,7 @@ private extension StringifyTextField {
 		}
 
 		if possibleText.count == 5 {
-			stDelegate?.didFilled(self)
+			stDelegate?.didFilled?(self)
 		}
 
 		return false
@@ -609,7 +602,7 @@ extension StringifyTextField: UITextFieldDelegate {
 		}
 
 		guard hasText else {
-			stDelegate?.didBeginEditing(self)
+			stDelegate?.didBeginEditing?(self)
 			return
 		}
 
@@ -620,13 +613,13 @@ extension StringifyTextField: UITextFieldDelegate {
 			break
 		}
 
-		stDelegate?.didBeginEditing(self)
+		stDelegate?.didBeginEditing?(self)
 	}
 
 	public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
 		guard let text = textField.text else { return false }
 
-		stDelegate?.didStartChanging(self, in: range, with: string)
+		stDelegate?.didStartChanging?(self, in: range, with: string)
 
 		switch textType {
 		case .amount:
@@ -648,7 +641,7 @@ extension StringifyTextField: UITextFieldDelegate {
 		}
 
 		guard hasText else {
-			stDelegate?.didEndEditing(self)
+			stDelegate?.didEndEditing?(self)
 			return
 		}
 
@@ -659,7 +652,7 @@ extension StringifyTextField: UITextFieldDelegate {
 			break
 		}
 
-		stDelegate?.didEndEditing(self)
+		stDelegate?.didEndEditing?(self)
 	}
 
 	public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
