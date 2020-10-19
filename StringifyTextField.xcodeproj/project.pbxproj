@@ -7,13 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A98CC0A253DCEE80056633D /* Pods_StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */; };
+		1A98CC0B253DCEE80056633D /* Pods_StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1AE9D6D0243F96D4005D66A5 /* StringifyTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AE9D6CE243F96D4005D66A5 /* StringifyTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1AE9D6D3243F96E0005D66A5 /* StringifyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE9D6D2243F96E0005D66A5 /* StringifyTextField.swift */; };
 		1AF9180D243FA64900C0282C /* Stringify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF9180C243FA64900C0282C /* Stringify.framework */; };
-		76AAEE8EA947EC3B6DF1D629 /* Pods_StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55078A633009A0241206513 /* Pods_StringifyTextField.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		1A98CC0C253DCEE80056633D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1A98CC0B253DCEE80056633D /* Pods_StringifyTextField.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE9D6C2243F95B4005D66A5 /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE9D6CE243F96D4005D66A5 /* StringifyTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringifyTextField.h; sourceTree = "<group>"; };
 		1AE9D6CF243F96D4005D66A5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -29,8 +45,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A98CC0A253DCEE80056633D /* Pods_StringifyTextField.framework in Frameworks */,
 				1AF9180D243FA64900C0282C /* Stringify.framework in Frameworks */,
-				76AAEE8EA947EC3B6DF1D629 /* Pods_StringifyTextField.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +84,7 @@
 		365F4D13495C716870F0F78C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */,
 				1AF9180C243FA64900C0282C /* Stringify.framework */,
 				B55078A633009A0241206513 /* Pods_StringifyTextField.framework */,
 			);
@@ -106,6 +123,7 @@
 				1AE9D6BF243F95B4005D66A5 /* Frameworks */,
 				1AE9D6BE243F95B4005D66A5 /* Sources */,
 				1AE9D6C0243F95B4005D66A5 /* Resources */,
+				1A98CC0C253DCEE80056633D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
