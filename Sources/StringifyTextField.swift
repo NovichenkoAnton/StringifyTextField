@@ -403,7 +403,7 @@ private extension StringifyTextField {
 					return true
 				}
 			} else {
-				guard possibleText.st.clean(fractionDigits: 0).count <= maxIntegerDigits else {
+				guard possibleText.st.clean(minFractionDigist: 0, maxFractionDigits: 0).count <= maxIntegerDigits else {
 					return false
 				}
 
