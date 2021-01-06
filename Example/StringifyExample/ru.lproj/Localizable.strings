@@ -1,0 +1,9 @@
+/* 
+  Localizable.strings
+  StringifyExample
+
+  Created by Anton Novichenko on 6.01.21.
+  Copyright © 2021 Anton Novichenko. All rights reserved.
+*/
+
+"PLACEHOLDER" = "Какой-то плэйсхолдер";

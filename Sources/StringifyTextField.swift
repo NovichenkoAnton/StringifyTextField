@@ -184,7 +184,16 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
+	// MARK: - Overridden properties
+
+	public override var placeholder: String? {
+		didSet {
+			floatedLabel.text = placeholder
+		}
+	}
+
 	// MARK: - Inits
+
 	public init(type inputType: TextType) {
 		self.textType = inputType
 

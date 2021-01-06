@@ -17,6 +17,11 @@ final class ViewController: UIViewController {
 	@IBOutlet var dateFormatTextField: UITextField!
 	@IBOutlet var segmentedControl: UISegmentedControl!
 	@IBOutlet var decimalSwitcher: UISwitch!
+	@IBOutlet var amountTextField: StringifyTextField! {
+		didSet {
+			amountTextField.placeholder = NSLocalizedString("PLACEHOLDER", comment: "")
+		}
+	}
 
 	private var manualTextField: StringifyTextField!
 
