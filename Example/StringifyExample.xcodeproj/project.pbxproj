@@ -43,6 +43,7 @@
 		1A556D0B2427C3DA00924FAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1A556D0D2427C3DA00924FAA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A556D1524289B5800924FAA /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1ADA50042600F1D9005DA2E6 /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ADEB590251E138B0004B695 /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF0B0E624437B7200526EFC /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF0B0E724437B7200526EFC /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,6 +103,7 @@
 		1A556D1424289B5800924FAA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1ADA50042600F1D9005DA2E6 /* Stringify.framework */,
 				1A03966525A59ED80046DDDA /* StringifyTextField.framework */,
 				1ADEB590251E138B0004B695 /* StringifyTextField.framework */,
 				1AF0B0F224437CF100526EFC /* StringifyTextField.framework */,

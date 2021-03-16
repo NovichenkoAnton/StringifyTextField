@@ -123,3 +123,9 @@ extension ViewController: StringifyTextFieldDelegate {
 	}
 }
 
+extension ViewController: StringifyTrailingActionDelegate {
+	func didTapTrailing(_ sender: UIButton, textField: StringifyTextField) {
+		print("tap")
+	}
+}
+

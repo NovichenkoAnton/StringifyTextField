@@ -30,6 +30,12 @@ import Stringify
 	@objc optional func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String)
 }
 
+@objc public protocol StringifyTrailingActionDelegate: AnyObject {
+	/// Detect tap on trailing view
+	/// - Parameter sender: `UIButton`
+	func didTapTrailing(_ sender: UIButton, textField: StringifyTextField)
+}
+
 public class StringifyTextField: UITextField {
 	/**
 	Possible text types for `StringifyTextField`
@@ -142,6 +148,24 @@ public class StringifyTextField: UITextField {
 	/// Default value is 0
 	@IBInspectable public var floatingPadding: CGFloat = 0
 
+	/// Image on the right side of `LineTextField`.
+	@IBInspectable public var trailingImage: UIImage? {
+		didSet {
+			configureTrailingImage()
+		}
+	}
+
+	@IBInspectable public var trailingTintColor: UIColor? {
+		didSet {
+			trailingButton.tintColor = trailingTintColor
+			setNeedsDisplay()
+		}
+	}
+
+	/// Right padding for trailing image.
+	/// Default value is 0.
+	@IBInspectable public var trailingPadding: CGFloat = 0
+
 	// MARK: - Public properties
 
 	/// Specific `TextType` for formatting text in textfield.
@@ -153,12 +177,21 @@ public class StringifyTextField: UITextField {
 	}
 
 	@IBOutlet public weak var stDelegate: StringifyTextFieldDelegate?
+	@IBOutlet public weak var stActionDelegate: StringifyTrailingActionDelegate?
 
 	// MARK: - Private properties
 
 	private lazy var numberFormatter = NumberFormatter()
 
 	private lazy var floatedLabel: UILabel = UILabel(frame: .zero)
+
+	private lazy var trailingButton: UIButton = {
+		let trailingButton = UIButton(type: .system)
+		trailingButton.frame = CGRect(x: 0, y: 0, width: bounds.height * 0.8, height: bounds.height * 0.8)
+		trailingButton.tintColor = trailingTintColor
+		trailingButton.addTarget(self, action: #selector(trailingButtonTap(_:)), for: .touchUpInside)
+		return trailingButton
+	}()
 
 	private lazy var underlineLayer = CALayer()
 
@@ -225,6 +258,7 @@ public class StringifyTextField: UITextField {
 	}
 
 	// MARK: - Functions
+
 	private func configure() {
 		delegate = self
 
@@ -278,6 +312,19 @@ public class StringifyTextField: UITextField {
 
 		addSubview(floatedLabel)
 		bringSubviewToFront(floatedLabel)
+	}
+
+	private func configureTrailingImage() {
+		rightView = nil
+		rightViewMode = .never
+
+		guard let image = trailingImage else { return }
+
+		let originalImage = image.withRenderingMode(.alwaysTemplate)
+		trailingButton.setImage(originalImage, for: .normal)
+
+		rightViewMode = .always
+		rightView = trailingButton
 	}
 
 	// MARK: - Overridden
@@ -338,9 +385,39 @@ public class StringifyTextField: UITextField {
 			super.paste(sender)
 		}
 	}
+
+	public override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
+		var rect = super.rightViewRect(forBounds: bounds)
+		rect.origin.x -= trailingPadding
+		return rect
+	}
+
+	public override func editingRect(forBounds bounds: CGRect) -> CGRect {
+		var rect = super.editingRect(forBounds: bounds)
+		if trailingImage != nil {
+			rect.size.width -= (bounds.height * 0.8 - trailingPadding)
+		}
+
+		return rect
+	}
+
+	public override func textRect(forBounds bounds: CGRect) -> CGRect {
+		var rect = super.textRect(forBounds: bounds)
+		if trailingImage != nil {
+			rect.size.width -= (bounds.height * 0.8 - trailingPadding)
+		}
+		return rect
+	}
+
+	// MARK: - Events
+
+	@objc func trailingButtonTap(_ sender: UIButton) {
+		stActionDelegate?.didTapTrailing(sender, textField: self)
+	}
 }
 
 // MARK: - Private extension (.amount format)
+
 private extension StringifyTextField {
 	enum InputedCharacter {
 		case number
@@ -425,6 +502,7 @@ private extension StringifyTextField {
 }
 
 // MARK: - Private extension (.creditCard, .IBAN formats)
+
 private extension StringifyTextField {
 	func cleanValue() -> String {
 		self.text!.replacingOccurrences(of: " ", with: "").trim()
@@ -456,6 +534,7 @@ private extension StringifyTextField {
 }
 
 // MARK: - Private extension (.expDate format)
+
 private extension StringifyTextField {
 	func expDateCleanValue() -> String {
 		guard let text = self.text else { return "" }
@@ -491,6 +570,7 @@ private extension StringifyTextField {
 }
 
 // MARK: - Bottom line animation
+
 private extension StringifyTextField {
 	func activateBottomLine() {
 		colorAnimation.fromValue = underlineLayer.backgroundColor
@@ -528,6 +608,7 @@ private extension StringifyTextField {
 }
 
 // MARK: - Floated placeholder configure
+
 private extension StringifyTextField {
 	/// Get font `UIFont` font for floated label
 	/// - Returns: Correct `UIFont`
@@ -604,6 +685,7 @@ private extension StringifyTextField {
 }
 
 // MARK: - UITextFieldDelegate
+
 extension StringifyTextField: UITextFieldDelegate {
 	public func textFieldDidBeginEditing(_ textField: UITextField) {
 		if lineVisible {
