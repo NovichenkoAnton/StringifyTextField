@@ -28,7 +28,7 @@
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="string" keyPath="decimalSeparator" value=","/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="inputTextType">
-                                        <integer key="value" value="3"/>
+                                        <integer key="value" value="4"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="string" keyPath="currencyMark" value="руб."/>
                                 </userDefinedRuntimeAttributes>
@@ -43,6 +43,7 @@
                                     <segment title="Credit card"/>
                                     <segment title="IBAN"/>
                                     <segment title="Exp date"/>
+                                    <segment title="CVV"/>
                                 </segments>
                                 <connections>
                                     <action selector="didChangeSegment:" destination="BYZ-38-t0r" eventType="valueChanged" id="Qrc-1y-RdL"/>

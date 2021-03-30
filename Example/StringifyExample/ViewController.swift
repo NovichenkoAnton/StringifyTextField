@@ -11,6 +11,7 @@ import StringifyTextField
 
 final class ViewController: UIViewController {
 	// MARK: - Outlets
+
 	@IBOutlet var stringifyTextField: StringifyTextField!
 	@IBOutlet var valueLabel: UILabel!
 	@IBOutlet var currencyTextField: UITextField!
@@ -26,6 +27,7 @@ final class ViewController: UIViewController {
 	private var manualTextField: StringifyTextField!
 
 	// MARK: - Lifecycle
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
@@ -46,6 +48,8 @@ final class ViewController: UIViewController {
 			segmentedControl.selectedSegmentIndex = 2
 		case .expDate:
 			segmentedControl.selectedSegmentIndex = 3
+		case .cvv:
+			segmentedControl.selectedSegmentIndex = 4
 		default:
 			break
 		}
@@ -76,6 +80,8 @@ final class ViewController: UIViewController {
 			stringifyTextField.textType = .IBAN
 		} else if sender.selectedSegmentIndex == 3 {
 			stringifyTextField.textType = .expDate
+		} else if sender.selectedSegmentIndex == 4 {
+			stringifyTextField.textType = .cvv
 		}
 	}
 

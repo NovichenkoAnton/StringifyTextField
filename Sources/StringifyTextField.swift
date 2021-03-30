@@ -47,10 +47,11 @@ public class StringifyTextField: UITextField {
 	*/
 	public enum TextType: UInt {
 		case amount = 0
-		case creditCard = 1
-		case IBAN = 2
-		case expDate = 3
-		case none = 4
+		case creditCard
+		case IBAN
+		case expDate
+		case cvv
+		case none
 	}
 
 	// MARK: - IBInspectable
@@ -212,6 +213,8 @@ public class StringifyTextField: UITextField {
 			return cleanValue().uppercased()
 		case .expDate:
 			return expDateCleanValue()
+		case .cvv:
+			return cvvCleanValue()
 		default:
 			return text!
 		}
@@ -268,7 +271,7 @@ public class StringifyTextField: UITextField {
 			numberFormatter.numberStyle = .decimal
 
 			configureDecimalFormat()
-		case .creditCard, .expDate:
+		case .creditCard, .expDate, .cvv:
 			keyboardType = .numberPad
 		case .IBAN:
 			keyboardType = .asciiCapable
@@ -569,6 +572,40 @@ private extension StringifyTextField {
 	}
 }
 
+// MARK: - Private extension (.cvv format)
+
+private extension StringifyTextField {
+	func cvvCleanValue() -> String {
+		guard let text = self.text else { return "" }
+
+		return text.trim()
+	}
+
+	func shouldChangeCVV(in range: NSRange, with string: String, and text: String) -> Bool {
+		if string.isEmpty {
+			return true
+		}
+
+		let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
+
+		let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
+
+		if possibleText.count <= 3 {
+			self.text = possibleText
+		}
+
+		if let location = cursorLocation {
+			selectedTextRange = textRange(from: location, to: location)
+		}
+
+		if possibleText.count == 3 {
+			stDelegate?.didFilled?(self)
+		}
+
+		return false
+	}
+}
+
 // MARK: - Bottom line animation
 
 private extension StringifyTextField {
@@ -721,6 +758,8 @@ extension StringifyTextField: UITextFieldDelegate {
 			return shouldChangeText(in: range, with: string, and: text, with: 42)
 		case .expDate:
 			return shouldChangeExpDate(in: range, with: string, and: text)
+		case .cvv:
+			return shouldChangeCVV(in: range, with: string, and: text)
 		default:
 			return true
 		}
