@@ -312,6 +312,7 @@ public class StringifyTextField: UITextField {
 		floatedLabel.font = labelFont()
 		floatedLabel.text = self.placeholder
 		floatedLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		floatedLabel.textAlignment = self.textAlignment
 
 		addSubview(floatedLabel)
 		bringSubviewToFront(floatedLabel)
