@@ -121,7 +121,7 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="4w7-ot-xGq"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Amount" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gwS-G6-oma" customClass="StringifyTextField" customModule="StringifyTextField">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Amount" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gwS-G6-oma" customClass="StringifyTextField" customModule="StringifyTextField">
                                 <rect key="frame" x="20" y="595" width="374" height="35"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>

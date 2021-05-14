@@ -228,6 +228,14 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
+	public override var textAlignment: NSTextAlignment {
+		didSet {
+			if floatingPlaceholder {
+				floatedLabel.textAlignment = textAlignment
+			}
+		}
+	}
+
 	// MARK: - Inits
 
 	public init(type inputType: TextType) {

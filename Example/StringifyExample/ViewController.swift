@@ -55,6 +55,7 @@ final class ViewController: UIViewController {
 		}
 
 		decimalSwitcher.isOn = stringifyTextField.decimal
+		amountTextField.textAlignment = .center
 
 //		let width = UIScreen.main.bounds.size.width - 40
 //		let yPosition = valueLabel.frame.maxY + 40
