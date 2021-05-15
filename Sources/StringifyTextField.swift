@@ -46,12 +46,7 @@ public class StringifyTextField: UITextField {
 	- **expDate**: expired date of credit cards, e.g., "03/22"
 	*/
 	public enum TextType: UInt {
-		case amount = 0
-		case creditCard
-		case IBAN
-		case expDate
-		case cvv
-		case none
+		case amount = 0, creditCard, IBAN, expDate, cvv, none
 	}
 
 	// MARK: - IBInspectable
@@ -81,6 +76,26 @@ public class StringifyTextField: UITextField {
 			if textType == .amount {
 				configureDecimalFormat()
 			}
+		}
+	}
+
+	/// Add grouping separator for `NumberFormatter`. Only for `.amount` type.
+	/// Default value is `true`
+	@IBInspectable public var needGroupingSeparator: Bool = true {
+		didSet {
+			if needGroupingSeparator {
+				numberFormatter.groupingSeparator = " "
+			} else {
+				numberFormatter.groupingSeparator = ""
+			}
+		}
+	}
+
+	/// Max number of digits in fraction part. Only for `.amount` type.
+	/// Default value is `2`.
+	@IBInspectable public var maxFractionDigits: UInt = 2 {
+		didSet {
+			numberFormatter.maximumFractionDigits = Int(maxFractionDigits)
 		}
 	}
 
@@ -196,9 +211,9 @@ public class StringifyTextField: UITextField {
 
 	private lazy var underlineLayer = CALayer()
 
-	private var colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
-	private var frameAnimation = CABasicAnimation(keyPath: "frame.size.height")
-	private var groupAnimation = CAAnimationGroup()
+	private let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
+	private let frameAnimation = CABasicAnimation(keyPath: "frame.size.height")
+	private let groupAnimation = CAAnimationGroup()
 
 	// MARK: - Public properties
 
@@ -275,7 +290,6 @@ public class StringifyTextField: UITextField {
 
 		switch textType {
 		case .amount:
-			numberFormatter.groupingSeparator = " "
 			numberFormatter.numberStyle = .decimal
 
 			configureDecimalFormat()
@@ -295,8 +309,11 @@ public class StringifyTextField: UITextField {
 		if decimal {
 			keyboardType = .decimalPad
 
+			if needGroupingSeparator {
+				numberFormatter.groupingSeparator = " "
+			}
 			numberFormatter.decimalSeparator = decimalSeparator
-			numberFormatter.maximumFractionDigits = 2
+			numberFormatter.maximumFractionDigits = Int(maxFractionDigits)
 		} else {
 			keyboardType = .numberPad
 		}
@@ -443,7 +460,8 @@ private extension StringifyTextField {
 	}
 
 	func sumFormatEnding() {
-		self.text = "\(self.text!.st.applyFormat(.custom(formatter: numberFormatter))) \(currencyMark)".trim()
+		let cleanValue = self.text!.st.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
+		self.text = "\(cleanValue.st.applyFormat(.custom(formatter: numberFormatter))) \(currencyMark)".trim()
 	}
 
 	func cleanValueForSum() -> String {
@@ -454,7 +472,7 @@ private extension StringifyTextField {
 		}
 
 		if decimal {
-			return textWithoutCurrency.st.clean()
+			return textWithoutCurrency.st.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
 		} else {
 			return textWithoutCurrency.replacingOccurrences(of: " ", with: "")
 		}
@@ -469,7 +487,10 @@ private extension StringifyTextField {
 				if let lastCharacter = possibleText.last, String(lastCharacter) == decimalSeparator {
 					self.text = possibleText
 				} else {
-					self.text = possibleText.st.applyFormat(.custom(formatter: numberFormatter))
+					let inputedText = possibleText
+						.replacingOccurrences(of: " ", with: "")
+						.replacingOccurrences(of: decimalSeparator, with: ".")
+					self.text = inputedText.st.applyFormat(.custom(formatter: numberFormatter))
 				}
 
 				return false
@@ -477,6 +498,7 @@ private extension StringifyTextField {
 				return true
 			}
 		}
+
 
 		//Format inputed characters
 		let adjustedInputedCharacter: InputedCharacter
@@ -495,17 +517,18 @@ private extension StringifyTextField {
 			let amountParts = possibleText.components(separatedBy: decimalSeparator)
 
 			if amountParts.count == 2 {
-				if let fraction = amountParts.last, fraction.count > 2 {
+				if let fraction = amountParts.last, fraction.count > maxFractionDigits {
 					self.text = text
 				} else {
 					return true
 				}
 			} else {
-				guard possibleText.st.clean(minFractionDigist: 0, maxFractionDigits: 0).count <= maxIntegerDigits else {
+				let inputedText = possibleText.replacingOccurrences(of: " ", with: "")
+				guard inputedText.count <= maxIntegerDigits else {
 					return false
 				}
 
-				self.text = possibleText.st.applyFormat(.custom(formatter: numberFormatter))
+				self.text = inputedText.st.applyFormat(.custom(formatter: numberFormatter))
 			}
 		}
 

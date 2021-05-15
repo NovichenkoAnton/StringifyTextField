@@ -15,5 +15,5 @@ Pod::Spec.new do |spec|
   spec.source_files     = "Sources/*.swift"
   spec.requires_arc     = true
   
-  spec.dependency 'Stringify', '~> 1.0'
+  spec.dependency 'Stringify', '1.0.19'
 end
