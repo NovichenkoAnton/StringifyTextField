@@ -487,10 +487,11 @@ private extension StringifyTextField {
 				if let lastCharacter = possibleText.last, String(lastCharacter) == decimalSeparator {
 					self.text = possibleText
 				} else {
-					let inputedText = possibleText
-						.replacingOccurrences(of: " ", with: "")
-						.replacingOccurrences(of: decimalSeparator, with: ".")
-					self.text = inputedText.st.applyFormat(.custom(formatter: numberFormatter))
+					if possibleText.toDouble() == .zero {
+						self.text = possibleText
+					} else {
+						self.text = possibleText.st.applyFormat(.custom(formatter: numberFormatter))
+					}
 				}
 
 				return false

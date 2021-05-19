@@ -26,15 +26,15 @@
                                     <userDefinedRuntimeAttribute type="number" keyPath="maxIntegerDigits">
                                         <integer key="value" value="6"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="decimalSeparator" value="_"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="decimalSeparator" value=","/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="inputTextType">
                                         <integer key="value" value="0"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="string" keyPath="currencyMark" value="руб."/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="maxFractionDigits">
-                                        <integer key="value" value="4"/>
+                                        <integer key="value" value="2"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="needGroupingSeparator" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="needGroupingSeparator" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="stDelegate" destination="BYZ-38-t0r" id="76b-tX-t8z"/>
