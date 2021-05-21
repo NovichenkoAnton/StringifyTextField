@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Stringify
+import Extendy
 
 @objc public protocol StringifyTextFieldDelegate: AnyObject {
 	/// Called when editing is begin
@@ -460,8 +460,8 @@ private extension StringifyTextField {
 	}
 
 	func sumFormatEnding() {
-		let cleanValue = self.text!.st.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
-		self.text = "\(cleanValue.st.applyFormat(.custom(formatter: numberFormatter))) \(currencyMark)".trim()
+		let cleanValue = self.text!.ext.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
+		self.text = "\(cleanValue.ext.applyFormat(.custom(formatter: numberFormatter))) \(currencyMark)".trim()
 	}
 
 	func cleanValueForSum() -> String {
@@ -472,7 +472,7 @@ private extension StringifyTextField {
 		}
 
 		if decimal {
-			return textWithoutCurrency.st.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
+			return textWithoutCurrency.ext.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
 		} else {
 			return textWithoutCurrency.replacingOccurrences(of: " ", with: "")
 		}
@@ -490,7 +490,7 @@ private extension StringifyTextField {
 					if possibleText.toDouble() == .zero {
 						self.text = possibleText
 					} else {
-						self.text = possibleText.st.applyFormat(.custom(formatter: numberFormatter))
+						self.text = possibleText.ext.applyFormat(.custom(formatter: numberFormatter))
 					}
 				}
 
@@ -529,7 +529,7 @@ private extension StringifyTextField {
 					return false
 				}
 
-				self.text = inputedText.st.applyFormat(.custom(formatter: numberFormatter))
+				self.text = inputedText.ext.applyFormat(.custom(formatter: numberFormatter))
 			}
 		}
 
@@ -575,7 +575,7 @@ private extension StringifyTextField {
 	func expDateCleanValue() -> String {
 		guard let text = self.text else { return "" }
 
-		return text.st.convertDate(from: "MM/yy", to: dateFormat) ?? ""
+		return text.ext.convertDate(from: "MM/yy", to: dateFormat) ?? ""
 	}
 
 	func shouldChangeExpDate(in range: NSRange, with string: String, and text: String) -> Bool {

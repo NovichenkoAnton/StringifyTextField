@@ -6,5 +6,5 @@ target 'StringifyExample' do
   use_frameworks!
 
   # Pods for StringifyExample
-  pod 'Stringify', '1.0.7'
+  pod 'Extendy', '1.1'
 end
