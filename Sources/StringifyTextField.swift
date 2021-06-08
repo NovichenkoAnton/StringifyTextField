@@ -171,13 +171,6 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	@IBInspectable public var trailingTintColor: UIColor? {
-		didSet {
-			trailingButton.tintColor = trailingTintColor
-			setNeedsDisplay()
-		}
-	}
-
 	/// Right padding for trailing image.
 	/// Default value is 0.
 	@IBInspectable public var trailingPadding: CGFloat = 0
@@ -204,7 +197,6 @@ public class StringifyTextField: UITextField {
 	private lazy var trailingButton: UIButton = {
 		let trailingButton = UIButton(type: .system)
 		trailingButton.frame = CGRect(x: 0, y: 0, width: bounds.height * 0.8, height: bounds.height * 0.8)
-		trailingButton.tintColor = trailingTintColor
 		trailingButton.addTarget(self, action: #selector(trailingButtonTap(_:)), for: .touchUpInside)
 		return trailingButton
 	}()
@@ -290,8 +282,6 @@ public class StringifyTextField: UITextField {
 
 		switch textType {
 		case .amount:
-			numberFormatter.numberStyle = .decimal
-
 			configureDecimalFormat()
 		case .creditCard, .expDate, .cvv:
 			keyboardType = .numberPad
@@ -314,6 +304,7 @@ public class StringifyTextField: UITextField {
 			}
 			numberFormatter.decimalSeparator = decimalSeparator
 			numberFormatter.maximumFractionDigits = Int(maxFractionDigits)
+			numberFormatter.numberStyle = .decimal
 		} else {
 			keyboardType = .numberPad
 		}
@@ -349,7 +340,7 @@ public class StringifyTextField: UITextField {
 
 		guard let image = trailingImage else { return }
 
-		let originalImage = image.withRenderingMode(.alwaysTemplate)
+		let originalImage = image.withRenderingMode(.alwaysOriginal)
 		trailingButton.setImage(originalImage, for: .normal)
 
 		rightViewMode = .always

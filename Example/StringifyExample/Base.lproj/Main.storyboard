@@ -165,6 +165,7 @@
                                     <userDefinedRuntimeAttribute type="color" keyPath="trailingTintColor">
                                         <color key="value" systemColor="systemPurpleColor"/>
                                     </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="image" keyPath="trailingImage" value="image"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="stActionDelegate" destination="BYZ-38-t0r" id="EsX-sA-Swx"/>
@@ -229,6 +230,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="image" width="24" height="24"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
