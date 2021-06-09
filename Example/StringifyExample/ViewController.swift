@@ -24,7 +24,17 @@ final class ViewController: UIViewController {
 		}
 	}
 
-	private var manualTextField: StringifyTextField!
+	private lazy var manualTextField: StringifyTextField = {
+		let manualTextField = StringifyTextField(type: .creditCard)
+		manualTextField.borderStyle = .roundedRect
+		manualTextField.decimal = true
+		manualTextField.maxIntegerDigits = 6
+		manualTextField.trailingImage = UIImage(named: "image")
+		manualTextField.trailingTintColor = UIColor.purple
+		manualTextField.trailingPadding = 20
+		manualTextField.stActionDelegate = self
+		return manualTextField
+	}()
 
 	// MARK: - Lifecycle
 
@@ -57,15 +67,12 @@ final class ViewController: UIViewController {
 		decimalSwitcher.isOn = stringifyTextField.decimal
 		amountTextField.textAlignment = .center
 
-//		let width = UIScreen.main.bounds.size.width - 40
-//		let yPosition = valueLabel.frame.maxY + 40
-//
-//		manualTextField = StringifyTextField(type: .amount)
-//		manualTextField.frame = CGRect(x: 20, y: yPosition, width: width, height: 40)
-//		manualTextField.borderStyle = .roundedRect
-//		manualTextField.decimal = true
-//		manualTextField.maxIntegerDigits = 6
-//		view.addSubview(manualTextField)
+		let width = UIScreen.main.bounds.size.width - 40
+		let yPosition = valueLabel.frame.maxY + 40
+
+		manualTextField.frame = CGRect(x: 20, y: yPosition, width: width, height: 40)
+
+		view.addSubview(manualTextField)
 	}
 
 	// MARK: - Events
