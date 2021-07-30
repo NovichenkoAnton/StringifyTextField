@@ -408,10 +408,18 @@ public class StringifyTextField: UITextField {
 		case .creditCard:
 			if pastedString.hasOnlyDigits(), pastedString.count <= 16 {
 				self.text = pastedString.separate(every: 4, with: " ")
+
+				if pastedString.count == 16 {
+					stDelegate?.didFilled?(self)
+				}
 			}
 		case .IBAN:
 			if pastedString.count <= 34 {
 				self.text = pastedString.separate(every: 4, with: " ")
+
+				if pastedString.count == 34 {
+					stDelegate?.didFilled?(self)
+				}
 			}
 		default:
 			super.paste(sender)
