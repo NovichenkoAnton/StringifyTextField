@@ -15,5 +15,5 @@ Pod::Spec.new do |spec|
   spec.source_files     = "Sources/*.swift"
   spec.requires_arc     = true
   
-  spec.dependency 'Extendy', '1.1.1'
+  spec.dependency 'Extendy', '1.1.2'
 end
