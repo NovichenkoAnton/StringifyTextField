@@ -124,9 +124,9 @@ extension ViewController: StringifyTextFieldDelegate {
 		print("did begin editing \(textField.text!)")
 	}
 
-//	func didEndEditing(_ textField: StringifyTextField) {
-//		print("did end editing \(textField.text!)")
-//	}
+	func didEndEditing(_ textField: StringifyTextField) {
+		print("did end editing \(textField.text!)")
+	}
 
 	func didFilled(_ textField: StringifyTextField) {
 		print("textField filled with text \(textField.text!)")
@@ -135,6 +135,10 @@ extension ViewController: StringifyTextFieldDelegate {
 	func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String) {
 		print("textField start changing text: \(textField.text!) in with: \(string)")
 	}
+    
+    func didEndChanging(_ textField: StringifyTextField) {
+        print("textField has a text after input/delete: \(textField.text!)")
+    }
 }
 
 extension ViewController: StringifyTrailingActionDelegate {

@@ -21,6 +21,10 @@ import Extendy
 	/// Called when text field has max inputed symbols
 	/// - Parameter textField: `StringifyTextField`
 	@objc optional func didFilled(_ textField: StringifyTextField)
+    
+    /// Called when was inputed/deleted symbol in text field
+    /// - Parameter textField: `StringifyTextField`
+    @objc optional func didEndChanging(_ textField: StringifyTextField)
 
 	/// Called when text field is changed
 	/// - Parameters:
@@ -504,11 +508,11 @@ private extension StringifyTextField {
 						self.text = possibleText.ext.applyFormat(.custom(formatter: numberFormatter))
 					}
 				}
-
-				return false
 			} else {
-				return true
+                self.text = (text as NSString).replacingCharacters(in: range, with: string)
 			}
+            
+            return false
 		}
 
 
@@ -532,13 +536,12 @@ private extension StringifyTextField {
 				if let fraction = amountParts.last, fraction.count > maxFractionDigits {
 					self.text = text
 				} else {
-					return true
+                    self.text = (text as NSString).replacingCharacters(in: range, with: string)
 				}
 			} else {
 				let inputedText = possibleText.replacingOccurrences(of: " ", with: "")
-				guard inputedText.count <= maxIntegerDigits else {
-					return false
-				}
+                
+				guard inputedText.count <= maxIntegerDigits else { return false }
 
 				self.text = inputedText.ext.applyFormat(.custom(formatter: numberFormatter))
 			}
@@ -557,7 +560,8 @@ private extension StringifyTextField {
 
 	func shouldChangeText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
 		if string.isEmpty {
-			return true
+            self.text = (text as NSString).replacingCharacters(in: range, with: string)
+			return false
 		}
 
 		let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
@@ -591,7 +595,8 @@ private extension StringifyTextField {
 
 	func shouldChangeExpDate(in range: NSRange, with string: String, and text: String) -> Bool {
 		if string.isEmpty {
-			return true
+            self.text = (text as NSString).replacingCharacters(in: range, with: string)
+            return false
 		}
 
 		let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
@@ -627,7 +632,8 @@ private extension StringifyTextField {
 
 	func shouldChangeCVV(in range: NSRange, with string: String, and text: String) -> Bool {
 		if string.isEmpty {
-			return true
+            self.text = (text as NSString).replacingCharacters(in: range, with: string)
+            return false
 		}
 
 		let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
@@ -792,6 +798,9 @@ extension StringifyTextField: UITextFieldDelegate {
 		guard let text = textField.text else { return false }
 
 		stDelegate?.didStartChanging?(self, in: range, with: string)
+        defer {
+            stDelegate?.didEndChanging?(self)
+        }
 
 		switch textType {
 		case .amount:
