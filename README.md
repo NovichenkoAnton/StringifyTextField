@@ -1,5 +1,5 @@
 # StringifyTextField
-Custom `UITextField` is based on `Stringify` framework functionality.
+Custom `UITextField` is based on `Extendy` framework functionality.
 
 [![Version](https://img.shields.io/cocoapods/v/StringifyTextField)](https://cocoapods.org/pods/StringifyTextField)
 [![License](https://img.shields.io/cocoapods/l/StringifyTextField)](https://raw.githubusercontent.com/NovichenkoAnton/StringifyTextField/master/LICENSE)
