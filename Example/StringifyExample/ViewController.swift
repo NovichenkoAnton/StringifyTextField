@@ -25,10 +25,10 @@ final class ViewController: UIViewController {
 	}
 
 	private lazy var manualTextField: StringifyTextField = {
-		let manualTextField = StringifyTextField(type: .creditCard)
+		let manualTextField = StringifyTextField(type: .none)
 		manualTextField.borderStyle = .roundedRect
 		manualTextField.decimal = true
-		manualTextField.maxIntegerDigits = 6
+		manualTextField.maxSymbols = 10
 		manualTextField.trailingImage = UIImage(named: "image")
 		manualTextField.trailingTintColor = UIColor.purple
 		manualTextField.trailingPadding = 20

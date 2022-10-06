@@ -64,6 +64,10 @@ public class StringifyTextField: UITextField {
 			textType = StringifyTextField.TextType(rawValue: min(newValue, 4)) ?? .none
 		}
 	}
+    
+    /// Max symbols for `.none` type.
+    /// Default value is `UInt.max`.
+    @IBInspectable public var maxSymbols: UInt = .max
 
 	/// Currency mark for `.amount` type.
 	/// Default value is an empty string.
@@ -111,7 +115,7 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	/// Date format for getting exp date from `associatedValue` property.
+	/// Date format for getting exp date from `plainValue` property.
 	/// Default value is "MMyy".
 	@IBInspectable public var dateFormat: String = "MMyy"
 
@@ -233,8 +237,8 @@ public class StringifyTextField: UITextField {
 			return expDateCleanValue()
 		case .cvv:
 			return cvvCleanValue()
-		default:
-			return text!
+        case .none:
+            return text.orEmpty
 		}
 	}
 
@@ -656,6 +660,35 @@ private extension StringifyTextField {
 	}
 }
 
+// MARK: - Private extension (.none format)
+
+private extension StringifyTextField {
+    func shouldChangeRawText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
+        if string.isEmpty {
+            self.text = (text as NSString).replacingCharacters(in: range, with: string)
+            return false
+        }
+
+        let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
+
+        let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
+
+        if possibleText.count <= maxLength {
+            self.text = possibleText
+        }
+
+        if let location = cursorLocation {
+            selectedTextRange = textRange(from: location, to: location)
+        }
+
+        if possibleText.count == maxLength {
+            stDelegate?.didFilled?(self)
+        }
+
+        return false
+    }
+}
+
 // MARK: - Bottom line animation
 
 private extension StringifyTextField {
@@ -813,8 +846,8 @@ extension StringifyTextField: UITextFieldDelegate {
 			return shouldChangeExpDate(in: range, with: string, and: text)
 		case .cvv:
 			return shouldChangeCVV(in: range, with: string, and: text)
-		default:
-			return true
+        case .none:
+			return shouldChangeRawText(in: range, with: string, and: text, with: Int(maxSymbols))
 		}
 	}
 
