@@ -241,6 +241,10 @@ public class StringifyTextField: UITextField {
             return text.orEmpty
 		}
 	}
+    
+    /// Set animation when floating placeholder is redrawn.
+    /// Default value is `true`.
+    public var floatingPlaceholderShowWithAnimation: Bool = true
 
 	// MARK: - Overridden properties
 
@@ -375,7 +379,7 @@ public class StringifyTextField: UITextField {
 		if floatingPlaceholder {
 			floatedLabel.frame = floatedLabelRect()
 
-			updateFloatedLabelColor(editing: (hasText && isFirstResponder))
+			updateFloatedLabelColor(editing: (hasText && isFirstResponder), animated: floatingPlaceholderShowWithAnimation)
 			updateFloatedLabel(animated: hasText)
 		}
 
@@ -787,7 +791,7 @@ private extension StringifyTextField {
 
 	/// Update text color of floated label
 	/// - Parameter editing: `true` if `UITextField` is editing now
-	func updateFloatedLabelColor(editing: Bool, animated: Bool = true) {
+	func updateFloatedLabelColor(editing: Bool, animated: Bool) {
 		let animationBlock = { () -> Void in
 			if editing && self.hasText {
 				self.floatedLabel.textColor = self.floatingPlaceholderActiveColor
