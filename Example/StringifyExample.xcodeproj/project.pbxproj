@@ -15,8 +15,6 @@
 		1A556D072427C3D800924FAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D052427C3D800924FAA /* Main.storyboard */; };
 		1A556D092427C3DA00924FAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D082427C3DA00924FAA /* Assets.xcassets */; };
 		1A556D0C2427C3DA00924FAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D0A2427C3DA00924FAA /* LaunchScreen.storyboard */; };
-		1AE16A60265798BC007812ED /* Pods_StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE16A5F265798BC007812ED /* Pods_StringifyTextField.framework */; };
-		1AE16A61265798BC007812ED /* Pods_StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE16A5F265798BC007812ED /* Pods_StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +24,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1AE16A61265798BC007812ED /* Pods_StringifyTextField.framework in Embed Frameworks */,
 				1A03966725A59ED80046DDDA /* StringifyTextField.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -65,7 +62,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AE16A60265798BC007812ED /* Pods_StringifyTextField.framework in Frameworks */,
 				1A03966625A59ED80046DDDA /* StringifyTextField.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,6 +69,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04A767CF2941BC8F00E01F86 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				1AE16A5F265798BC007812ED /* Pods_StringifyTextField.framework */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		1A556CF32427C3D800924FAA = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +84,7 @@
 				1A556CFD2427C3D800924FAA /* Products */,
 				1A556D1424289B5800924FAA /* Frameworks */,
 				C9F645EC50D3D8007956574B /* Pods */,
+				04A767CF2941BC8F00E01F86 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,7 +113,6 @@
 		1A556D1424289B5800924FAA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1AE16A5F265798BC007812ED /* Pods_StringifyTextField.framework */,
 				1ADA50042600F1D9005DA2E6 /* Stringify.framework */,
 				1A03966525A59ED80046DDDA /* StringifyTextField.framework */,
 				1ADEB590251E138B0004B695 /* StringifyTextField.framework */,
