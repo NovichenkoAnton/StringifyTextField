@@ -32,6 +32,10 @@ import Extendy
 	///   - range: The range of characters to be changed
 	///   - string: Replacement string
 	@objc optional func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String)
+    
+    /// Called when clear button was tapped
+    /// - Parameter textField: `StringifyTextField`
+    @objc optional func textFieldCleared(_ textField: StringifyTextField)
 }
 
 @objc public protocol StringifyTrailingActionDelegate: AnyObject {
@@ -878,4 +882,11 @@ extension StringifyTextField: UITextFieldDelegate {
 	public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		return resignFirstResponder()
 	}
+    
+    public func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        defer {
+            stDelegate?.textFieldCleared?(self)
+        }
+        return true
+    }
 }

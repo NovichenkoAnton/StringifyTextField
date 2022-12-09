@@ -29,10 +29,12 @@ final class ViewController: UIViewController {
 		manualTextField.borderStyle = .roundedRect
 		manualTextField.decimal = true
 		manualTextField.maxSymbols = 10
-		manualTextField.trailingImage = UIImage(named: "image")
-		manualTextField.trailingTintColor = UIColor.purple
-		manualTextField.trailingPadding = 20
+//		manualTextField.trailingImage = UIImage(named: "image")
+//		manualTextField.trailingTintColor = UIColor.purple
+//		manualTextField.trailingPadding = 20
 		manualTextField.stActionDelegate = self
+        manualTextField.stDelegate = self
+        manualTextField.clearButtonMode = .whileEditing
 		return manualTextField
 	}()
 
@@ -138,6 +140,10 @@ extension ViewController: StringifyTextFieldDelegate {
     
     func didEndChanging(_ textField: StringifyTextField) {
         print("textField has a text after input/delete: \(textField.text!)")
+    }
+    
+    func textFieldCleared(_ textField: StringifyTextField) {
+        print("textField was cleared")
     }
 }
 
