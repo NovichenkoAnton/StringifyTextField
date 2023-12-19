@@ -44,7 +44,7 @@ import Extendy
 	func didTapTrailing(_ sender: UIButton, textField: StringifyTextField)
 }
 
-public class StringifyTextField: UITextField {
+ open class StringifyTextField: UITextField {
 	/**
 	Possible text types for `StringifyTextField`
 
@@ -252,13 +252,13 @@ public class StringifyTextField: UITextField {
 
 	// MARK: - Overridden properties
 
-	public override var placeholder: String? {
+	open override var placeholder: String? {
 		didSet {
 			floatedLabel.text = placeholder
 		}
 	}
 
-	public override var textAlignment: NSTextAlignment {
+	open override var textAlignment: NSTextAlignment {
 		didSet {
 			if floatingPlaceholder {
 				floatedLabel.textAlignment = textAlignment
@@ -284,7 +284,7 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
 		super.init(coder: coder)
 
 		configure()
@@ -373,7 +373,7 @@ public class StringifyTextField: UITextField {
 
 	// MARK: - Overridden
 
-	public override func layoutSubviews() {
+	open override func layoutSubviews() {
 		super.layoutSubviews()
 
 		if lineVisible {
@@ -392,7 +392,7 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	public override func closestPosition(to point: CGPoint) -> UITextPosition? {
+	open override func closestPosition(to point: CGPoint) -> UITextPosition? {
 		switch textType {
 		case .amount:
 			return position(from: beginningOfDocument, offset: self.text?.count ?? 0)
@@ -401,7 +401,7 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	public override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+	open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
 		switch textType {
 		case .amount, .expDate:
 			if action == #selector(paste(_:)) || action == #selector(cut(_:)) {
@@ -413,7 +413,7 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	public override func paste(_ sender: Any?) {
+	open override func paste(_ sender: Any?) {
 		guard UIPasteboard.general.hasStrings, var pastedString = UIPasteboard.general.string else {
 			return
 		}
@@ -442,13 +442,13 @@ public class StringifyTextField: UITextField {
 		}
 	}
 
-	public override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
+	open override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
 		var rect = super.rightViewRect(forBounds: bounds)
 		rect.origin.x -= trailingPadding
 		return rect
 	}
 
-	public override func editingRect(forBounds bounds: CGRect) -> CGRect {
+	open override func editingRect(forBounds bounds: CGRect) -> CGRect {
 		var rect = super.editingRect(forBounds: bounds)
 		if trailingImage != nil {
 			rect.size.width -= (bounds.height * 0.8 - trailingPadding)
@@ -457,7 +457,7 @@ public class StringifyTextField: UITextField {
 		return rect
 	}
 
-	public override func textRect(forBounds bounds: CGRect) -> CGRect {
+	open override func textRect(forBounds bounds: CGRect) -> CGRect {
 		var rect = super.textRect(forBounds: bounds)
 		if trailingImage != nil {
 			rect.size.width -= (bounds.height * 0.8 - trailingPadding)
