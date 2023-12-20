@@ -24,17 +24,15 @@ final class ViewController: UIViewController {
 		}
 	}
 
-	private lazy var manualTextField: StringifyTextField = {
-		let manualTextField = StringifyTextField(type: .none)
-		manualTextField.borderStyle = .roundedRect
-		manualTextField.decimal = true
-		manualTextField.maxSymbols = 10
-//		manualTextField.trailingImage = UIImage(named: "image")
-//		manualTextField.trailingTintColor = UIColor.purple
-//		manualTextField.trailingPadding = 20
+	private lazy var manualTextField: BorderedStringifyTextField = {
+		let manualTextField = BorderedStringifyTextField(type: .amount)
 		manualTextField.stActionDelegate = self
         manualTextField.stDelegate = self
-        manualTextField.clearButtonMode = .whileEditing
+        manualTextField.activeBorderColor = UIColor.blue
+        manualTextField.errorBorderColor = UIColor.red
+        manualTextField.cornerRadius = 12
+        manualTextField.borderWidth = 2
+        manualTextField.backgroundColor = UIColor.white
 		return manualTextField
 	}()
 
