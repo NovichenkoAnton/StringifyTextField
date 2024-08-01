@@ -8,23 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		1A03966B25A59F4D0046DDDA /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1A03966D25A59F4D0046DDDA /* Localizable.strings */; };
-		1A5145EF2B31D3AC009C66A6 /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF91808243F9C5C00C0282C /* StringifyTextField.framework */; };
-		1A5145F02B31D3AC009C66A6 /* StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF91808243F9C5C00C0282C /* StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1A556D002427C3D800924FAA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A556CFF2427C3D800924FAA /* AppDelegate.swift */; };
 		1A556D042427C3D800924FAA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A556D032427C3D800924FAA /* ViewController.swift */; };
 		1A556D072427C3D800924FAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D052427C3D800924FAA /* Main.storyboard */; };
 		1A556D092427C3DA00924FAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D082427C3DA00924FAA /* Assets.xcassets */; };
 		1A556D0C2427C3DA00924FAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D0A2427C3DA00924FAA /* LaunchScreen.storyboard */; };
+		1A8D6F012C5B6F850034B2E2 /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A8D6F002C5B6F850034B2E2 /* StringifyTextField.framework */; };
+		1A8D6F022C5B6F850034B2E2 /* StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A8D6F002C5B6F850034B2E2 /* StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1A5145F12B31D3AC009C66A6 /* Embed Frameworks */ = {
+		1A8D6F032C5B6F850034B2E2 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1A5145F02B31D3AC009C66A6 /* StringifyTextField.framework in Embed Frameworks */,
+				1A8D6F022C5B6F850034B2E2 /* StringifyTextField.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,6 +43,7 @@
 		1A556D0B2427C3DA00924FAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1A556D0D2427C3DA00924FAA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A556D1524289B5800924FAA /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A8D6F002C5B6F850034B2E2 /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ADA50042600F1D9005DA2E6 /* Stringify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Stringify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ADEB590251E138B0004B695 /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE16A5F265798BC007812ED /* Pods_StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,7 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A5145EF2B31D3AC009C66A6 /* StringifyTextField.framework in Frameworks */,
+				1A8D6F012C5B6F850034B2E2 /* StringifyTextField.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +114,7 @@
 		1A556D1424289B5800924FAA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1A8D6F002C5B6F850034B2E2 /* StringifyTextField.framework */,
 				1ADA50042600F1D9005DA2E6 /* Stringify.framework */,
 				1A03966525A59ED80046DDDA /* StringifyTextField.framework */,
 				1ADEB590251E138B0004B695 /* StringifyTextField.framework */,
@@ -149,7 +151,7 @@
 				1A556CF92427C3D800924FAA /* Frameworks */,
 				1A556CFA2427C3D800924FAA /* Resources */,
 				F1E0D046ECCED21163655586 /* [CP] Embed Pods Frameworks */,
-				1A5145F12B31D3AC009C66A6 /* Embed Frameworks */,
+				1A8D6F032C5B6F850034B2E2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

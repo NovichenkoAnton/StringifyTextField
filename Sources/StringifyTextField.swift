@@ -258,6 +258,12 @@ open class StringifyTextField: UITextField {
         }
     }
     
+    open override var attributedPlaceholder: NSAttributedString? {
+        didSet {
+            floatedLabel.text = attributedPlaceholder?.string
+        }
+    }
+    
     open override var textAlignment: NSTextAlignment {
         didSet {
             if floatingPlaceholder {
@@ -349,7 +355,11 @@ open class StringifyTextField: UITextField {
         floatedLabel.alpha = 1
         floatedLabel.textColor = UIColor.black
         floatedLabel.font = labelFont()
-        floatedLabel.text = self.placeholder
+        if let attributedPlaceholder = self.attributedPlaceholder {
+            floatedLabel.text = attributedPlaceholder.string
+        } else {
+            floatedLabel.text = self.placeholder
+        }
         floatedLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         floatedLabel.textAlignment = self.textAlignment
         
