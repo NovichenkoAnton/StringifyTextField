@@ -190,6 +190,16 @@ open class StringifyTextField: UITextField {
         }
     }
     
+    public var trailingImageRenderingMode: UIImage.RenderingMode = .alwaysTemplate {
+        didSet {
+            guard let trailingImage else { return }
+            
+            let originalImage = trailingImage.withRenderingMode(trailingImageRenderingMode)
+            trailingButton.setImage(originalImage, for: .normal)
+            setNeedsDisplay()
+        }
+    }
+    
     /// Right padding for trailing image.
     /// Default value is 0.
     @IBInspectable public var trailingPadding: CGFloat = 0
@@ -373,7 +383,7 @@ open class StringifyTextField: UITextField {
         
         guard let image = trailingImage else { return }
         
-        let originalImage = image.withRenderingMode(.alwaysTemplate)
+        let originalImage = image.withRenderingMode(trailingImageRenderingMode)
         trailingButton.setImage(originalImage, for: .normal)
         trailingButton.tintColor = trailingTintColor
         

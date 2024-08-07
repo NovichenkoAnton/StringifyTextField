@@ -27,6 +27,7 @@ final class ViewController: UIViewController {
                     .font: UIFont.systemFont(ofSize: 16, weight: .semibold)
                 ]
             )
+//            amountTextField.trailingImageRenderingMode = .alwaysOriginal
 		}
 	}
 
