@@ -438,7 +438,9 @@ open class StringifyTextField: UITextField {
             return
         }
         
-        pastedString = pastedString.replacingOccurrences(of: " ", with: "")
+        pastedString = pastedString
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "\u{00A0}", with: "")
         
         switch textType {
         case .creditCard:
@@ -521,7 +523,7 @@ private extension StringifyTextField {
         if decimal {
             return textWithoutCurrency.ext.clean(minFractionDigits: 0, maxFractionDigits: Int(maxFractionDigits), decimalSeparator: decimalSeparator)
         } else {
-            return textWithoutCurrency.replacingOccurrences(of: " ", with: "")
+            return textWithoutCurrency.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\u{00A0}", with: "")
         }
     }
     
@@ -587,7 +589,9 @@ private extension StringifyTextField {
 
 private extension StringifyTextField {
     func cleanValue() -> String {
-        self.text!.replacingOccurrences(of: " ", with: "").trim()
+        self.text!.replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "\u{00A0}", with: "")
+            .trim()
     }
     
     func shouldChangeText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
