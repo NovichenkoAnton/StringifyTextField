@@ -12,7 +12,11 @@ import StringifyTextField
 final class ViewController: UIViewController {
 	// MARK: - Outlets
 
-	@IBOutlet var stringifyTextField: StringifyTextField!
+    @IBOutlet var stringifyTextField: StringifyTextField! {
+        didSet {
+            stringifyTextField.style = .native(borderStyle: .roundedRect)
+        }
+    }
 	@IBOutlet var valueLabel: UILabel!
 	@IBOutlet var currencyTextField: UITextField!
 	@IBOutlet var dateFormatTextField: UITextField!
@@ -20,14 +24,19 @@ final class ViewController: UIViewController {
 	@IBOutlet var decimalSwitcher: UISwitch!
 	@IBOutlet var amountTextField: StringifyTextField! {
 		didSet {
+            amountTextField.style = .border(cornerRadius: 10)
+//            amountTextField.style = .line
             amountTextField.attributedPlaceholder = NSAttributedString(
                 string: NSLocalizedString("PLACEHOLDER", comment: ""),
                 attributes: [
-                    .foregroundColor: UIColor.red,
-                    .font: UIFont.systemFont(ofSize: 16, weight: .semibold)
+                    .foregroundColor: UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1.00),
+                    .font: UIFont.systemFont(ofSize: 18)
                 ]
             )
-//            amountTextField.trailingImageRenderingMode = .alwaysOriginal
+            amountTextField.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+            amountTextField.borderColorActive = UIColor(red: 0.01, green: 0.50, blue: 1.00, alpha: 1.00)
+            amountTextField.borderWidthActive = 2
+            amountTextField.floatingPlaceholder = true
 		}
 	}
 
@@ -72,14 +81,13 @@ final class ViewController: UIViewController {
 		}
 
 		decimalSwitcher.isOn = stringifyTextField.decimal
-		amountTextField.textAlignment = .center
 
 		let width = UIScreen.main.bounds.size.width - 40
 		let yPosition = valueLabel.frame.maxY + 40
 
-//		manualTextField.frame = CGRect(x: 20, y: yPosition, width: width, height: 40)
+		manualTextField.frame = CGRect(x: 20, y: yPosition, width: width, height: 40)
 
-//		view.addSubview(manualTextField)
+		view.addSubview(manualTextField)
 	}
 
 	// MARK: - Events

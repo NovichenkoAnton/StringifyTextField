@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="StringifyTextField" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4e2-gO-waW" customClass="StringifyTextField" customModule="StringifyTextField">
-                                <rect key="frame" x="20" y="138" width="374" height="34"/>
+                                <rect key="frame" x="20" y="190" width="374" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <userDefinedRuntimeAttributes>
@@ -41,7 +41,7 @@
                                 </connections>
                             </textField>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Zn7-BU-V90">
-                                <rect key="frame" x="20" y="238.5" width="374" height="32"/>
+                                <rect key="frame" x="20" y="290.5" width="374" height="32"/>
                                 <segments>
                                     <segment title="Amount"/>
                                     <segment title="Credit card"/>
@@ -54,13 +54,13 @@
                                 </connections>
                             </segmentedControl>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Text type" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dsh-k3-sVX">
-                                <rect key="frame" x="20" y="202" width="374" height="26.5"/>
+                                <rect key="frame" x="20" y="254" width="374" height="26.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Currency" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nrf-kn-q50">
-                                <rect key="frame" x="20" y="336" width="120" height="34"/>
+                                <rect key="frame" x="20" y="388" width="120" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="R8L-96-YKx"/>
                                 </constraints>
@@ -71,33 +71,33 @@
                                 </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Currency mark" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c2I-Qp-Q0Z">
-                                <rect key="frame" x="20" y="299.5" width="374" height="26.5"/>
+                                <rect key="frame" x="20" y="351.5" width="374" height="26.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rA2-Nz-LKi">
-                                <rect key="frame" x="20" y="402" width="179" height="30"/>
+                                <rect key="frame" x="20" y="454" width="179" height="30"/>
                                 <state key="normal" title="Get textfield value"/>
                                 <connections>
                                     <action selector="getTextFieldValue:" destination="BYZ-38-t0r" eventType="touchUpInside" id="a4M-s4-lv8"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Textfield value is:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LDP-rH-tmI">
-                                <rect key="frame" x="20" y="550.5" width="374" height="20.5"/>
+                                <rect key="frame" x="20" y="602.5" width="374" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="quH-ey-WIO">
-                                <rect key="frame" x="215" y="402" width="179" height="30"/>
+                                <rect key="frame" x="215" y="454" width="179" height="30"/>
                                 <state key="normal" title="Copy card number"/>
                                 <connections>
                                     <action selector="copyCardNumber:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rRH-s5-OSh"/>
                                 </connections>
                             </button>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0XE-1Y-BNF">
-                                <rect key="frame" x="347" y="337.5" width="49" height="31"/>
+                                <rect key="frame" x="347" y="389.5" width="49" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="47" id="lwx-wA-T6y"/>
                                 </constraints>
@@ -106,19 +106,19 @@
                                 </connections>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Is decimal" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xWh-XJ-Zgl">
-                                <rect key="frame" x="262" y="342.5" width="77" height="21"/>
+                                <rect key="frame" x="262" y="394.5" width="77" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date format" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-xQ-GVZ">
-                                <rect key="frame" x="20" y="456" width="374" height="26.5"/>
+                                <rect key="frame" x="20" y="508" width="374" height="26.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Date format" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yHh-Xg-hq8">
-                                <rect key="frame" x="20" y="492.5" width="374" height="34"/>
+                                <rect key="frame" x="20" y="544.5" width="374" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="done"/>
                                 <connections>
@@ -126,10 +126,10 @@
                                 </connections>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Amount" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gwS-G6-oma" customClass="StringifyTextField" customModule="StringifyTextField">
-                                <rect key="frame" x="20" y="595" width="374" height="35"/>
+                                <rect key="frame" x="20" y="647" width="374" height="50"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="35" id="r9A-Ct-QK8"/>
+                                    <constraint firstAttribute="height" constant="50" id="r9A-Ct-QK8"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -142,14 +142,13 @@
                                     <userDefinedRuntimeAttribute type="number" keyPath="maxIntegerDigits">
                                         <integer key="value" value="6"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="lineVisible" value="YES"/>
                                     <userDefinedRuntimeAttribute type="color" keyPath="lineColorDefault">
                                         <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="color" keyPath="lineColorActive">
                                         <color key="value" systemColor="linkColor"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="floatingPlaceholder" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="floatingPlaceholder" value="NO"/>
                                     <userDefinedRuntimeAttribute type="color" keyPath="floatingPlaceholderColor">
                                         <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </userDefinedRuntimeAttribute>
@@ -165,7 +164,6 @@
                                     <userDefinedRuntimeAttribute type="color" keyPath="trailingTintColor">
                                         <color key="value" systemColor="systemPurpleColor"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="image" keyPath="trailingImage" value="image"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="stActionDelegate" destination="BYZ-38-t0r" id="EsX-sA-Swx"/>
@@ -230,7 +228,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="image" width="24" height="24"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

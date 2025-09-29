@@ -45,6 +45,13 @@ import Extendy
 }
 
 open class StringifyTextField: UITextField {
+    /// Styles for `StringifyTextField`
+    public enum Style {
+        case line
+        case border(cornerRadius: CGFloat = 0)
+        case native(borderStyle: UITextField.BorderStyle)
+    }
+    
     /**
      Possible text types for `StringifyTextField`
      
@@ -123,17 +130,6 @@ open class StringifyTextField: UITextField {
     /// Default value is "MMyy".
     @IBInspectable public var dateFormat: String = "MMyy"
     
-    /// Add underline for `UITextField`
-    /// Default valie is `false`
-    @IBInspectable public var lineVisible: Bool = false {
-        didSet {
-            if lineVisible {
-                configureBottomLine()
-                setNeedsDisplay()
-            }
-        }
-    }
-    
     /// Color for default state of the bottom line.
     /// Default value is `UIColor.white`.
     @IBInspectable public var lineColorDefault: UIColor = UIColor.white {
@@ -146,6 +142,34 @@ open class StringifyTextField: UITextField {
     /// Color for active state of the bottom line.
     /// Default value is `UIColor.black`.
     @IBInspectable public var lineColorActive: UIColor = UIColor.black
+    
+    /// Color for border in inactive state. Only for `.border` style.
+    /// Default value is `UIColor.clear`
+    @IBInspectable public var borderColorDefault: UIColor = UIColor.clear {
+        didSet {
+            if case .border = style {
+                layer.borderColor = borderColorDefault.cgColor
+            }
+        }
+    }
+    
+    /// Color for border in active state. Only for `.border` style.
+    /// Default value is `UIColor.blue`.
+    @IBInspectable public var borderColorActive: UIColor = UIColor.blue
+    
+    /// Width for border in inactive state. Only for `.border` style.
+    /// Default value is `.zero`.
+    @IBInspectable public var borderWidthInactive: CGFloat = .zero{
+        didSet {
+            if case .border = style, !isFirstResponder {
+                layer.borderWidth = borderWidthInactive
+            }
+        }
+    }
+    
+    /// Width for border in active state. Only for `.border` style.
+    /// Default value is `1.0`.
+    @IBInspectable public var borderWidthActive: CGFloat = 1.0
     
     /// Set up floated placeholder for `UITextField`
     /// Default value is `false`.
@@ -214,6 +238,12 @@ open class StringifyTextField: UITextField {
         }
     }
     
+    public var style: Style = .native(borderStyle: .roundedRect) {
+        didSet {
+            configureStyle()
+        }
+    }
+    
     @IBOutlet public weak var stDelegate: StringifyTextFieldDelegate?
     @IBOutlet public weak var stActionDelegate: StringifyTrailingActionDelegate?
     
@@ -234,7 +264,13 @@ open class StringifyTextField: UITextField {
     
     private let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
     private let frameAnimation = CABasicAnimation(keyPath: "frame.size.height")
+    private let borderColorAnimation = CABasicAnimation(keyPath: "borderColor")
+    private let borderWidthAnimation = CABasicAnimation(keyPath: "borderWidth")
     private let groupAnimation = CAAnimationGroup()
+    
+    private var isBorderAnimating = false
+    
+    private let borderTextPadding: CGFloat = 16
     
     // MARK: - Public properties
     
@@ -284,30 +320,29 @@ open class StringifyTextField: UITextField {
     
     // MARK: - Inits
     
-    public init(type inputType: TextType) {
+    public init(type inputType: TextType, style: StringifyTextField.Style) {
         self.textType = inputType
+        self.style = style
         
         super.init(frame: .zero)
         
         configure()
-        
-        if lineVisible {
-            configureBottomLine()
-        }
+        configureStyle()
         
         if floatingPlaceholder {
             configureFloatedPlaceholder()
         }
     }
     
+    convenience init(type inputType: TextType) {
+        self.init(type: inputType, style: .line)
+    }
+    
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         
         configure()
-        
-        if lineVisible {
-            configureBottomLine()
-        }
+        configureStyle()
         
         if floatingPlaceholder {
             configureFloatedPlaceholder()
@@ -331,6 +366,20 @@ open class StringifyTextField: UITextField {
             returnKeyType = .done
         case .none:
             keyboardType = .default
+        }
+    }
+    
+    private func configureStyle() {
+        switch style {
+        case .line:
+            configureBottomLine()
+        case let .native(borderStyle):
+            self.borderStyle = borderStyle
+        case let .border(cornerRadius):
+            self.borderStyle = .none
+            self.layer.cornerRadius = cornerRadius
+            self.layer.borderWidth = borderWidthInactive
+            self.layer.borderColor = borderColorDefault.cgColor
         }
     }
     
@@ -396,7 +445,7 @@ open class StringifyTextField: UITextField {
     open override func layoutSubviews() {
         super.layoutSubviews()
         
-        if lineVisible {
+        if case .line = style {
             underlineLayer.frame = CGRect(x: 0, y: self.bounds.height, width: self.bounds.width, height: underlineLayer.frame.height)
         }
         
@@ -405,10 +454,6 @@ open class StringifyTextField: UITextField {
             
             updateFloatedLabelColor(editing: (hasText && isFirstResponder), animated: floatingPlaceholderShowWithAnimation)
             updateFloatedLabel(animated: hasText)
-        }
-        
-        if trailingImage != nil {
-            trailingButton.frame = CGRect(x: bounds.width - (bounds.height * 0.8 + trailingPadding), y: (bounds.height - bounds.height * 0.8)/2, width: bounds.height * 0.8, height: bounds.height * 0.8)
         }
     }
     
@@ -465,15 +510,41 @@ open class StringifyTextField: UITextField {
     }
     
     open override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
-        var rect = super.rightViewRect(forBounds: bounds)
-        rect.origin.x -= trailingPadding
-        return rect
+        guard trailingImage != nil else {
+            return super.rightViewRect(forBounds: bounds)
+        }
+        
+        let buttonSize = bounds.height * 0.6
+        
+        let xPosition: CGFloat
+        if case .border = style {
+            xPosition = bounds.width - buttonSize - trailingPadding - borderTextPadding
+        } else {
+            xPosition = bounds.width - buttonSize - trailingPadding
+        }
+        
+        let yPosition = (bounds.height - buttonSize) / 2
+        
+        return CGRect(x: xPosition, y: yPosition, width: buttonSize, height: buttonSize)
     }
     
     open override func editingRect(forBounds bounds: CGRect) -> CGRect {
         var rect = super.editingRect(forBounds: bounds)
+        
+        if case .border = style {
+            rect.origin.x += borderTextPadding
+            rect.size.width -= borderTextPadding * 2
+        }
+        
         if trailingImage != nil {
-            rect.size.width -= (bounds.height * 0.8 - trailingPadding)
+            let buttonSize = bounds.height * 0.6
+            let trailingViewWidth = buttonSize + trailingPadding
+            
+            rect.size.width = bounds.width - rect.origin.x - trailingViewWidth
+            
+            if case .border = style {
+                rect.size.width -= borderTextPadding * 2
+            }
         }
         
         return rect
@@ -481,9 +552,23 @@ open class StringifyTextField: UITextField {
     
     open override func textRect(forBounds bounds: CGRect) -> CGRect {
         var rect = super.textRect(forBounds: bounds)
-        if trailingImage != nil {
-            rect.size.width -= (bounds.height * 0.8 - trailingPadding)
+        
+        if case .border = style {
+            rect.origin.x += borderTextPadding
+            rect.size.width -= borderTextPadding * 2
         }
+        
+        if trailingImage != nil {
+            let buttonSize = bounds.height * 0.6
+            let trailingViewWidth = buttonSize + trailingPadding
+            
+            rect.size.width = bounds.width - rect.origin.x - trailingViewWidth
+            
+            if case .border = style {
+                rect.size.width -= borderTextPadding * 2
+            }
+        }
+        
         return rect
     }
     
@@ -737,8 +822,11 @@ private extension StringifyTextField {
         underlineLayer.removeAllAnimations()
         underlineLayer.add(groupAnimation, forKey: nil)
         
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         underlineLayer.backgroundColor = lineColorActive.cgColor
         underlineLayer.frame.size.height += 1
+        CATransaction.commit()
     }
     
     func deactivateBottomLine() {
@@ -754,8 +842,69 @@ private extension StringifyTextField {
         underlineLayer.removeAllAnimations()
         underlineLayer.add(groupAnimation, forKey: nil)
         
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         underlineLayer.backgroundColor = lineColorDefault.cgColor
         underlineLayer.frame.size.height -= 1
+        CATransaction.commit()
+    }
+}
+
+// MARK: - Border animation
+
+private extension StringifyTextField {
+    func activateBorder() {
+        isBorderAnimating = true
+        
+        borderColorAnimation.fromValue = layer.borderColor
+        borderColorAnimation.toValue = borderColorActive.cgColor
+        
+        borderWidthAnimation.fromValue = layer.borderWidth
+        borderWidthAnimation.toValue = borderWidthActive
+        
+        groupAnimation.animations = [borderColorAnimation, borderWidthAnimation]
+        groupAnimation.duration = 0.15
+        
+        layer.removeAllAnimations()
+        layer.add(groupAnimation, forKey: "borderFadeIn")
+        
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        layer.borderColor = borderColorActive.cgColor
+        layer.borderWidth = borderWidthActive
+        CATransaction.commit()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            self.isBorderAnimating = false
+        }
+    }
+    
+    private func deactivateBorder() {
+        guard case .border = style, !isBorderAnimating else { return }
+        
+        isBorderAnimating = true
+        
+        borderColorAnimation.fromValue = layer.borderColor
+        borderColorAnimation.toValue = borderColorDefault
+        
+        borderWidthAnimation.fromValue = layer.borderWidth
+        borderWidthAnimation.toValue = borderWidthInactive
+        
+        groupAnimation.animations = [borderColorAnimation, borderWidthAnimation]
+        groupAnimation.duration = 0.15
+        
+        layer.removeAllAnimations()
+        layer.add(groupAnimation, forKey: "borderFadeOut")
+        
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        layer.borderColor = borderColorDefault.cgColor
+        layer.borderWidth = borderWidthInactive
+        CATransaction.commit()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            self.isBorderAnimating = false
+        }
     }
 }
 
@@ -794,7 +943,11 @@ private extension StringifyTextField {
         let labelHeight = floatedLabelHeight()
         
         if hasText {
-            return CGRect(x: 0, y: -9 - floatingPadding, width: bounds.size.width, height: labelHeight)
+            if case .border = style {
+                return CGRect(x: 0, y: -20 - floatingPadding, width: bounds.size.width, height: labelHeight)
+            } else {
+                return CGRect(x: 0, y: -9 - floatingPadding, width: bounds.size.width, height: labelHeight)
+            }
         }
         
         return CGRect(x: 0, y: bounds.origin.y, width: bounds.size.width, height: labelHeight)
@@ -811,7 +964,7 @@ private extension StringifyTextField {
         }
         
         if animated {
-            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: animationBlock, completion: nil)
+            UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseOut, animations: animationBlock, completion: nil)
         } else {
             animationBlock()
         }
@@ -840,8 +993,10 @@ private extension StringifyTextField {
 
 extension StringifyTextField: UITextFieldDelegate {
     open func textFieldDidBeginEditing(_ textField: UITextField) {
-        if lineVisible {
+        if case .line = style {
             activateBottomLine()
+        } else if case .border = style {
+            activateBorder()
         }
         
         guard hasText else {
@@ -884,8 +1039,10 @@ extension StringifyTextField: UITextFieldDelegate {
     }
     
     open func textFieldDidEndEditing(_ textField: UITextField) {
-        if lineVisible {
+        if case .line = style {
             deactivateBottomLine()
+        } else if case .border = style {
+            deactivateBorder()
         }
         
         guard hasText else {

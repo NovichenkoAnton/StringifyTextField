@@ -45,8 +45,8 @@ open class BorderedStringifyTextField: StringifyTextField {
 
     // MARK: - Inits
 
-    override public init(type inputType: StringifyTextField.TextType) {
-        super.init(type: inputType)
+    public init(type inputType: StringifyTextField.TextType) {
+        super.init(type: inputType, style: .native(borderStyle: .none))
         
         setup()
     }
@@ -58,9 +58,7 @@ open class BorderedStringifyTextField: StringifyTextField {
     }
     
     private func setup() {
-        lineVisible = false
         floatingPlaceholder = false
-        borderStyle = .none
         
         layer.borderColor = borderColor?.cgColor
         layer.borderWidth = borderWidth

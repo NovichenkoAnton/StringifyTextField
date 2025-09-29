@@ -6,5 +6,5 @@ target 'StringifyTextField' do
   use_frameworks!
 
   # Pods for StringifyTextField
-  pod 'Extendy', '~> 1.1'
+  pod 'Extendy', '~> 1.2'
 end
