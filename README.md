@@ -16,7 +16,7 @@ Custom `UITextField` is based on `Extendy` framework functionality.
 StringifyTextField is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'StringifyTextField', '~> 1.0'
+pod 'StringifyTextField', '~> 1.2'
 ```
 
 ## Usage
