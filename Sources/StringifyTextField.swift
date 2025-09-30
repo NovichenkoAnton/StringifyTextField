@@ -171,6 +171,14 @@ open class StringifyTextField: UITextField {
     /// Default value is `1.0`.
     @IBInspectable public var borderWidthActive: CGFloat = 1.0
     
+    /// Color for error state.
+    /// Default value is `UIColor.red`.
+    @IBInspectable public var errorColor: UIColor = UIColor.red
+
+    /// Error display duration before auto-hiding.
+    /// Default value is `1.0`.
+    @IBInspectable public var errorDisplayDuration: Double = 1.0
+    
     /// Set up floated placeholder for `UITextField`
     /// Default value is `false`.
     @IBInspectable public var floatingPlaceholder: Bool = false {
@@ -267,10 +275,13 @@ open class StringifyTextField: UITextField {
     private let borderColorAnimation = CABasicAnimation(keyPath: "borderColor")
     private let borderWidthAnimation = CABasicAnimation(keyPath: "borderWidth")
     private let groupAnimation = CAAnimationGroup()
+        
+    private let borderTextPadding: CGFloat = 16
     
     private var isBorderAnimating = false
     
-    private let borderTextPadding: CGFloat = 16
+    private var isShowingError = false
+    private var errorWorkItem: DispatchWorkItem?
     
     // MARK: - Public properties
     
@@ -576,6 +587,38 @@ open class StringifyTextField: UITextField {
     
     @objc func trailingButtonTap(_ sender: UIButton) {
         stActionDelegate?.didTapTrailing(sender, textField: self)
+    }
+    
+    // MARK: - Public API
+    
+    public func showError() {
+        showError(for: errorDisplayDuration)
+    }
+    
+    public func showError(for duration: Double) {
+        guard !isShowingError else { return }
+        
+        errorWorkItem?.cancel()
+        
+        isShowingError = true
+        
+        animateToErrorState()
+        
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.hideError()
+        }
+        errorWorkItem = workItem
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + errorDisplayDuration, execute: workItem)
+    }
+    
+    public func hideError() {
+        errorWorkItem?.cancel()
+        errorWorkItem = nil
+        
+        isShowingError = false
+        
+        animateToNormalState()
     }
 }
 
@@ -904,6 +947,121 @@ private extension StringifyTextField {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
             self.isBorderAnimating = false
+        }
+    }
+}
+
+// MARK: - Error animation
+
+private extension StringifyTextField {
+    func animateToErrorState() {
+        switch style {
+        case .line:
+            colorAnimation.fromValue = underlineLayer.backgroundColor
+            colorAnimation.toValue = errorColor.cgColor
+            
+            if isFirstResponder {
+                groupAnimation.animations = [colorAnimation]
+            } else {
+                frameAnimation.fromValue = underlineLayer.frame.size.height
+                frameAnimation.toValue = underlineLayer.frame.size.height + 1
+                
+                groupAnimation.animations = [colorAnimation, frameAnimation]
+            }
+            
+            groupAnimation.duration = 0.2
+            
+            underlineLayer.removeAllAnimations()
+            underlineLayer.add(groupAnimation, forKey: "errorColor")
+            
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            if !isFirstResponder {
+                underlineLayer.frame.size.height += 1
+            }
+            
+            underlineLayer.backgroundColor = errorColor.cgColor
+            CATransaction.commit()
+        case .border:
+            borderColorAnimation.fromValue = layer.borderColor
+            borderColorAnimation.toValue = errorColor.cgColor
+            
+            borderWidthAnimation.fromValue = layer.borderWidth
+            borderWidthAnimation.toValue = borderWidthActive
+            
+            groupAnimation.animations = [borderColorAnimation, borderWidthAnimation]
+            groupAnimation.duration = 0.15
+            
+            layer.removeAllAnimations()
+            layer.add(groupAnimation, forKey: "borderColor")
+            
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            layer.borderColor = errorColor.cgColor
+            layer.borderWidth = borderWidthActive
+            CATransaction.commit()
+        default:
+            break
+        }
+    }
+    
+    func animateToNormalState() {
+        switch style {
+        case .line:
+            let targetColor: CGColor
+            let height: CGFloat
+            
+            if isFirstResponder {
+                targetColor = lineColorActive.cgColor
+                height = underlineLayer.frame.size.height
+            } else {
+                targetColor = lineColorDefault.cgColor
+                height = underlineLayer.frame.size.height - 1
+            }
+            
+            colorAnimation.fromValue = underlineLayer.backgroundColor
+            colorAnimation.toValue = targetColor
+            
+            if isFirstResponder {
+                groupAnimation.animations = [colorAnimation]
+            } else {
+                frameAnimation.fromValue = underlineLayer.frame.size.height
+                frameAnimation.toValue = height
+                
+                groupAnimation.animations = [colorAnimation, frameAnimation]
+            }
+            
+            groupAnimation.duration = 0.2
+            
+            underlineLayer.removeAllAnimations()
+            underlineLayer.add(groupAnimation, forKey: "errorColor")
+            
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            underlineLayer.backgroundColor = targetColor
+            underlineLayer.frame.size.height = height
+            CATransaction.commit()
+        case .border:
+            let targetColor: CGColor
+            if isFirstResponder {
+                targetColor = borderColorActive.cgColor
+            } else {
+                targetColor = borderColorDefault.cgColor
+            }
+            
+            borderColorAnimation.fromValue = layer.borderColor
+            borderColorAnimation.toValue = targetColor
+            borderColorAnimation.duration = 0.15
+            
+            layer.removeAllAnimations()
+            layer.add(borderColorAnimation, forKey: "borderColor")
+            
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            layer.borderColor = targetColor
+            CATransaction.commit()
+        default:
+            break
         }
     }
 }

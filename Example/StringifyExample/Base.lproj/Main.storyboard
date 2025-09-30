@@ -169,6 +169,17 @@
                                     <outlet property="stActionDelegate" destination="BYZ-38-t0r" id="EsX-sA-Swx"/>
                                 </connections>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wUo-5K-F9k">
+                                <rect key="frame" x="20" y="719" width="128" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="ht9-LI-2Ty"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Animate error"/>
+                                <connections>
+                                    <action selector="showError:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FhK-av-LLf"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemYellowColor"/>
@@ -192,11 +203,13 @@
                             <constraint firstItem="Zn7-BU-V90" firstAttribute="leading" secondItem="Dsh-k3-sVX" secondAttribute="leading" id="NkH-U2-PQP"/>
                             <constraint firstItem="xWh-XJ-Zgl" firstAttribute="centerY" secondItem="0XE-1Y-BNF" secondAttribute="centerY" id="PcN-PP-gg7"/>
                             <constraint firstItem="gwS-G6-oma" firstAttribute="top" secondItem="LDP-rH-tmI" secondAttribute="bottom" constant="24" id="SPc-KG-lsd"/>
+                            <constraint firstItem="wUo-5K-F9k" firstAttribute="leading" secondItem="gwS-G6-oma" secondAttribute="leading" id="Tbj-FY-d58"/>
                             <constraint firstItem="Dsh-k3-sVX" firstAttribute="leading" secondItem="4e2-gO-waW" secondAttribute="leading" id="aBN-Lr-ARs"/>
                             <constraint firstItem="rA2-Nz-LKi" firstAttribute="top" secondItem="nrf-kn-q50" secondAttribute="bottom" constant="32" id="b98-bj-lDe"/>
                             <constraint firstItem="nrf-kn-q50" firstAttribute="top" secondItem="c2I-Qp-Q0Z" secondAttribute="bottom" constant="10" id="cP2-gR-4db"/>
                             <constraint firstItem="Zn7-BU-V90" firstAttribute="top" secondItem="Dsh-k3-sVX" secondAttribute="bottom" constant="10" id="dwH-Ys-Ybo"/>
                             <constraint firstItem="yHh-Xg-hq8" firstAttribute="top" secondItem="AYs-xQ-GVZ" secondAttribute="bottom" constant="10" id="eIi-8z-cd9"/>
+                            <constraint firstItem="wUo-5K-F9k" firstAttribute="top" secondItem="gwS-G6-oma" secondAttribute="bottom" constant="22" id="ei2-kU-Laz"/>
                             <constraint firstItem="c2I-Qp-Q0Z" firstAttribute="trailing" secondItem="Zn7-BU-V90" secondAttribute="trailing" id="fVM-W8-cxy"/>
                             <constraint firstItem="Zn7-BU-V90" firstAttribute="trailing" secondItem="Dsh-k3-sVX" secondAttribute="trailing" id="fZq-pg-5E2"/>
                             <constraint firstItem="AYs-xQ-GVZ" firstAttribute="leading" secondItem="rA2-Nz-LKi" secondAttribute="leading" id="gIG-GX-Rgr"/>
@@ -217,6 +230,7 @@
                         <outlet property="currencyTextField" destination="nrf-kn-q50" id="96Q-Yg-MdD"/>
                         <outlet property="dateFormatTextField" destination="yHh-Xg-hq8" id="ylB-5I-R6s"/>
                         <outlet property="decimalSwitcher" destination="0XE-1Y-BNF" id="d72-yJ-Rd2"/>
+                        <outlet property="errorButton" destination="wUo-5K-F9k" id="903-yl-app"/>
                         <outlet property="segmentedControl" destination="Zn7-BU-V90" id="Mmc-2E-emS"/>
                         <outlet property="stringifyTextField" destination="4e2-gO-waW" id="6Z2-dN-rUK"/>
                         <outlet property="valueLabel" destination="LDP-rH-tmI" id="swc-tN-9cO"/>

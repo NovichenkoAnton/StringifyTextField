@@ -24,8 +24,8 @@ final class ViewController: UIViewController {
 	@IBOutlet var decimalSwitcher: UISwitch!
 	@IBOutlet var amountTextField: StringifyTextField! {
 		didSet {
-            amountTextField.style = .border(cornerRadius: 10)
 //            amountTextField.style = .line
+            amountTextField.style = .border(cornerRadius: 10)
             amountTextField.attributedPlaceholder = NSAttributedString(
                 string: NSLocalizedString("PLACEHOLDER", comment: ""),
                 attributes: [
@@ -36,7 +36,9 @@ final class ViewController: UIViewController {
             amountTextField.backgroundColor = UIColor.white.withAlphaComponent(0.4)
             amountTextField.borderColorActive = UIColor(red: 0.01, green: 0.50, blue: 1.00, alpha: 1.00)
             amountTextField.borderWidthActive = 2
-            amountTextField.floatingPlaceholder = true
+            amountTextField.floatingPlaceholder = false
+            amountTextField.errorDisplayDuration = 1.5
+            amountTextField.errorColor = UIColor(red: 1.00, green: 0.27, blue: 0.23, alpha: 1.00)
 		}
 	}
 
@@ -52,7 +54,8 @@ final class ViewController: UIViewController {
 		return manualTextField
 	}()
 
-	// MARK: - Lifecycle
+    @IBOutlet var errorButton: UIButton!
+    // MARK: - Lifecycle
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -82,12 +85,10 @@ final class ViewController: UIViewController {
 
 		decimalSwitcher.isOn = stringifyTextField.decimal
 
-		let width = UIScreen.main.bounds.size.width - 40
-		let yPosition = valueLabel.frame.maxY + 40
+//        let width = view.frame.width - 40
+//        manualTextField.frame = CGRect(x: 20, y: errorButton.frame.origin.y, width: width, height: 40)
 
-		manualTextField.frame = CGRect(x: 20, y: yPosition, width: width, height: 40)
-
-		view.addSubview(manualTextField)
+//		view.addSubview(manualTextField)
 	}
 
 	// MARK: - Events
@@ -120,6 +121,11 @@ final class ViewController: UIViewController {
 	@IBAction func changeDecimal(_ sender: UISwitch) {
 		stringifyTextField.decimal = sender.isOn
 	}
+    
+    @IBAction func showError(_ sender: Any) {
+        amountTextField.showError()
+//        manualTextField.showError()
+    }
 }
 
 // MARK: - UITextFieldDelegate

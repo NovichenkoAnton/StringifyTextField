@@ -97,7 +97,7 @@ open class BorderedStringifyTextField: StringifyTextField {
 
     // MARK: - Public API
 
-    public func highlightError() {
+    public override func showError() {
         borderColorAnimation.fromValue = layer.borderColor
         borderColorAnimation.toValue = errorBorderColor?.cgColor
         borderColorAnimation.duration = 0.2
@@ -108,7 +108,7 @@ open class BorderedStringifyTextField: StringifyTextField {
         layer.borderColor = errorBorderColor?.cgColor
     }
 
-    public func hideError() {
+    public override func hideError() {
         animateHideBorder()
     }
 }
