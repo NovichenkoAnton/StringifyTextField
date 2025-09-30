@@ -345,7 +345,7 @@ open class StringifyTextField: UITextField {
         }
     }
     
-    convenience init(type inputType: TextType) {
+    convenience public init(type inputType: TextType) {
         self.init(type: inputType, style: .line)
     }
     
