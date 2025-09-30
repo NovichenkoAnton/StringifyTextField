@@ -1,5 +1,5 @@
 # StringifyTextField
-Custom `UITextField` is based on `Extendy` framework functionality.
+Custom `UITextField` based on `Extendy` framework functionality.
 
 [![Version](https://img.shields.io/cocoapods/v/StringifyTextField)](https://cocoapods.org/pods/StringifyTextField)
 [![License](https://img.shields.io/cocoapods/l/StringifyTextField)](https://raw.githubusercontent.com/NovichenkoAnton/StringifyTextField/master/LICENSE)
@@ -7,7 +7,7 @@ Custom `UITextField` is based on `Extendy` framework functionality.
 
 ## Requirements
 
-- iOS 10.0+
+- iOS 12.0+
 
 ## Installation
 
@@ -32,7 +32,7 @@ let manualTextField = StringifyTextField(type: .amount)
 manualTextField.frame = CGRect(x: 20, y: 100, width: 200, height: 40)
 ```
 
-`StringifyTextField` is a textfield which can format inputed string with 4 available formats.
+`StringifyTextField` is a textfield that can format entered string with 4 available formats.
 
 Available formats:
 ```swift
@@ -70,7 +70,7 @@ stringifyTextField.decimal = false
 
 ![exp date format](https://user-images.githubusercontent.com/8337067/77651967-9a174480-6f7e-11ea-947c-de74b8a40804.gif)
 
-You can specify date format to get needed "clean" value
+You can specify date format to get the required "clean" value
 
 ```swift
 stringifyTextField.dateFormat = "MM.yyyy"
@@ -78,23 +78,41 @@ stringifyTextField.dateFormat = "MM.yyyy"
 
 ### Plain value
 
-You can get plain value from `StringifyTextField`, e.g for `.expDate` format it will be value with applying specific date format.
+You can get plain value from `StringifyTextField`, e.g for `.expDate` format it will be the value with the specific date format applied.
 
 ```swift
 let expDate = stringifyTextField.plainValue
 ```
 
-### Bottom line & floated placeholder
+### Styles & floating placeholder
 
-You can add bottom line dispay in `StringifyTextField`
+`StringifyTextField` supports three different styles:
 
 ```swift
-stringifyTextField.lineVisible = true
+public enum Style {
+    case line
+    case border(cornerRadius: CGFloat)
+    case native(borderStyle: UITextField.BorderStyle)
+}
+```
+
+You can add bottom line display in `StringifyTextField` with `.line` style
+
+```swift
+stringifyTextField.style = .line
 stringifyTextField.lineColorDefault = UIColor.black
 stringifyTextField.lineColorActive = UIColor.blue
 ```
 
-and floated label display
+or use bordered style:
+
+```swift
+stringifyTextField.style = .border(cornerRadius: 8)
+stringifyTextField.borderColorDefault = UIColor.lightGray
+stringifyTextField.borderColorActive = UIColor.blue
+```
+
+and enable floating placeholder display:
 
 ```swift
 stringifyTextField.floatingPlaceholder = true
@@ -102,7 +120,26 @@ stringifyTextField.floatingPlaceholderColor = UIColor.black
 stringifyTextField.floatingPlaceholderActiveColor = UIColor.blue
 ```
 
-![bottom line and floated label](https://user-images.githubusercontent.com/8337067/78424011-3faf6f80-7673-11ea-993d-3c449fa4420c.gif)
+![bottom line and floating label](https://user-images.githubusercontent.com/8337067/78424011-3faf6f80-7673-11ea-993d-3c449fa4420c.gif)
+
+### Error handling
+
+Display error state with temporary highlight:
+
+```swift
+// Show error for default duration (1 second)
+stringifyTextField.showError()
+
+// Show error for custom duration
+stringifyTextField.showError(for: 5.0)
+
+// Hide error manually
+stringifyTextField.hideError()
+```
 
 ## Demo
 You can see other features in the example project.
+
+## License
+
+StringifyTextField is available under the MIT license. See the LICENSE file for more info.
