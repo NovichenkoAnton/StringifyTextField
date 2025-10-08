@@ -77,8 +77,8 @@ open class StringifyTextField: UITextField {
     }
     
     /// Max symbols for `.none` type.
-    /// Default value is `UInt.max`.
-    @IBInspectable public var maxSymbols: UInt = .max
+    /// Default value is `100`.
+    @IBInspectable public var maxSymbols: UInt = 100
     
     /// Currency mark for `.amount` type.
     /// Default value is an empty string.
@@ -179,6 +179,22 @@ open class StringifyTextField: UITextField {
     /// Default value is `1.0`.
     @IBInspectable public var errorDisplayDuration: Double = 1.0
     
+    /// Top padding between text field and error label.
+    /// Default value is `4.0`.
+    @IBInspectable public var errorLabelTopPadding: CGFloat = 4.0
+    
+    /// Error message to display.
+    /// Default value is empty string.
+    @IBInspectable public var errorMessage: String = "" {
+        didSet {
+            errorLabel.text = errorMessage
+        }
+    }
+    
+    /// Whether to show error label.
+    /// Default value is `true`.
+    @IBInspectable public var showsErrorLabel: Bool = true
+    
     /// Set up floated placeholder for `UITextField`
     /// Default value is `false`.
     @IBInspectable public var floatingPlaceholder: Bool = false {
@@ -246,9 +262,19 @@ open class StringifyTextField: UITextField {
         }
     }
     
+    /// Specific `Style` for the text field.
+    /// Default value us `.native(borderStyle: .roundedRect)`.
     public var style: Style = .native(borderStyle: .roundedRect) {
         didSet {
             configureStyle()
+        }
+    }
+    
+    /// Font for error label.
+    /// Default value is `UIFont.systemFont(ofSize: 14)`.
+    public var errorLabelFont: UIFont = UIFont.systemFont(ofSize: 14) {
+        didSet {
+            errorLabel.font = errorLabelFont
         }
     }
     
@@ -260,6 +286,17 @@ open class StringifyTextField: UITextField {
     private lazy var numberFormatter = NumberFormatter()
     
     private lazy var floatedLabel: UILabel = UILabel(frame: .zero)
+    
+    private lazy var errorLabel: UILabel = {
+        let errorLabel = UILabel()
+        errorLabel.textColor = errorColor
+        errorLabel.font = errorLabelFont
+        errorLabel.text = errorMessage
+        errorLabel.numberOfLines = 0
+        errorLabel.isHidden = true
+        errorLabel.alpha = 0.0
+        return errorLabel
+    }()
     
     private lazy var trailingButton: UIButton = {
         let trailingButton = UIButton(type: .system)
@@ -451,6 +488,22 @@ open class StringifyTextField: UITextField {
         rightView = trailingButton
     }
     
+    private func setupErrorLabel() {
+        guard let superview else { return }
+        
+        errorLabel.removeFromSuperview()
+        
+        superview.addSubview(errorLabel)
+        superview.bringSubviewToFront(errorLabel)
+                
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            errorLabel.topAnchor.constraint(equalTo: self.bottomAnchor, constant: errorLabelTopPadding),
+            errorLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            errorLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+        ])
+    }
+    
     // MARK: - Overridden
     
     open override func layoutSubviews() {
@@ -466,6 +519,19 @@ open class StringifyTextField: UITextField {
             updateFloatedLabelColor(editing: (hasText && isFirstResponder), animated: floatingPlaceholderShowWithAnimation)
             updateFloatedLabel(animated: hasText)
         }
+    }
+    
+    open override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        
+        if superview != nil && showsErrorLabel {
+            setupErrorLabel()
+        }
+    }
+    
+    open override func removeFromSuperview() {
+        errorLabel.removeFromSuperview()
+        super.removeFromSuperview()
     }
     
     open override func closestPosition(to point: CGPoint) -> UITextPosition? {
@@ -591,7 +657,11 @@ open class StringifyTextField: UITextField {
     
     // MARK: - Public API
     
-    public func showError() {
+    public func showError(message: String? = nil) {
+        if let message {
+            self.errorMessage = message
+        }
+        
         showError(for: errorDisplayDuration)
     }
     
@@ -602,7 +672,10 @@ open class StringifyTextField: UITextField {
         
         isShowingError = true
         
+        errorLabel.text = errorMessage
+        
         animateToErrorState()
+        showErrorLabel()
         
         let workItem = DispatchWorkItem { [weak self] in
             self?.hideError()
@@ -618,6 +691,7 @@ open class StringifyTextField: UITextField {
         
         isShowingError = false
         
+        hideErrorLabel()
         animateToNormalState()
     }
 }
@@ -862,7 +936,6 @@ private extension StringifyTextField {
         groupAnimation.animations = [colorAnimation, frameAnimation]
         groupAnimation.duration = 0.2
         
-        underlineLayer.removeAllAnimations()
         underlineLayer.add(groupAnimation, forKey: nil)
         
         CATransaction.begin()
@@ -882,7 +955,6 @@ private extension StringifyTextField {
         groupAnimation.animations = [colorAnimation, frameAnimation]
         groupAnimation.duration = 0.2
         
-        underlineLayer.removeAllAnimations()
         underlineLayer.add(groupAnimation, forKey: nil)
         
         CATransaction.begin()
@@ -908,7 +980,6 @@ private extension StringifyTextField {
         groupAnimation.animations = [borderColorAnimation, borderWidthAnimation]
         groupAnimation.duration = 0.15
         
-        layer.removeAllAnimations()
         layer.add(groupAnimation, forKey: "borderFadeIn")
         
         CATransaction.begin()
@@ -936,7 +1007,6 @@ private extension StringifyTextField {
         groupAnimation.animations = [borderColorAnimation, borderWidthAnimation]
         groupAnimation.duration = 0.15
         
-        layer.removeAllAnimations()
         layer.add(groupAnimation, forKey: "borderFadeOut")
         
         CATransaction.begin()
@@ -971,7 +1041,6 @@ private extension StringifyTextField {
             
             groupAnimation.duration = 0.2
             
-            underlineLayer.removeAllAnimations()
             underlineLayer.add(groupAnimation, forKey: "errorColor")
             
             CATransaction.begin()
@@ -992,7 +1061,6 @@ private extension StringifyTextField {
             groupAnimation.animations = [borderColorAnimation, borderWidthAnimation]
             groupAnimation.duration = 0.15
             
-            layer.removeAllAnimations()
             layer.add(groupAnimation, forKey: "borderColor")
             
             CATransaction.begin()
@@ -1033,7 +1101,6 @@ private extension StringifyTextField {
             
             groupAnimation.duration = 0.2
             
-            underlineLayer.removeAllAnimations()
             underlineLayer.add(groupAnimation, forKey: "errorColor")
             
             CATransaction.begin()
@@ -1053,7 +1120,6 @@ private extension StringifyTextField {
             borderColorAnimation.toValue = targetColor
             borderColorAnimation.duration = 0.15
             
-            layer.removeAllAnimations()
             layer.add(borderColorAnimation, forKey: "borderColor")
             
             CATransaction.begin()
@@ -1062,6 +1128,30 @@ private extension StringifyTextField {
             CATransaction.commit()
         default:
             break
+        }
+    }
+    
+    private func showErrorLabel() {
+        guard showsErrorLabel && !errorMessage.isEmpty else { return }
+        
+        if errorLabel.superview == nil {
+            setupErrorLabel()
+        }
+        
+        errorLabel.isHidden = false
+        
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveLinear, animations: {
+            self.errorLabel.alpha = 1.0
+        }, completion: nil)
+    }
+    
+    private func hideErrorLabel() {
+        guard errorLabel.superview != nil else { return }
+        
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveLinear, animations: {
+            self.errorLabel.alpha = 0.0
+        }) { _ in
+            self.errorLabel.isHidden = true
         }
     }
 }

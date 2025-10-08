@@ -39,6 +39,9 @@ final class ViewController: UIViewController {
             amountTextField.floatingPlaceholder = false
             amountTextField.errorDisplayDuration = 1.5
             amountTextField.errorColor = UIColor(red: 1.00, green: 0.27, blue: 0.23, alpha: 1.00)
+            amountTextField.errorMessage = "Some error"
+            amountTextField.errorLabelTopPadding = 10
+            amountTextField.errorLabelFont = UIFont.systemFont(ofSize: 12)
 		}
 	}
 
