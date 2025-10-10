@@ -26,6 +26,7 @@ final class ViewController: UIViewController {
 		didSet {
 //            amountTextField.style = .line
             amountTextField.style = .border(cornerRadius: 10)
+            amountTextField.textType = .none
             amountTextField.attributedPlaceholder = NSAttributedString(
                 string: NSLocalizedString("PLACEHOLDER", comment: ""),
                 attributes: [
@@ -42,6 +43,7 @@ final class ViewController: UIViewController {
             amountTextField.errorMessage = "Some error"
             amountTextField.errorLabelTopPadding = 10
             amountTextField.errorLabelFont = UIFont.systemFont(ofSize: 12)
+            amountTextField.pattern = .own(pattern: "[A-Za-z0-9]")
 		}
 	}
 

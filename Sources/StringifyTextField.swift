@@ -344,6 +344,9 @@ open class StringifyTextField: UITextField {
     /// Default value is `true`.
     public var floatingPlaceholderShowWithAnimation: Bool = true
     
+    /// Regular expression for `.none` text type to validate.
+    public var pattern: String.RegExpPattern?
+    
     // MARK: - Overridden properties
     
     open override var placeholder: String? {
@@ -900,6 +903,10 @@ private extension StringifyTextField {
     func shouldChangeRawText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
         if string.isEmpty {
             self.text = (text as NSString).replacingCharacters(in: range, with: string)
+            return false
+        }
+        
+        if let pattern, !string.validate(with: pattern) {
             return false
         }
         
