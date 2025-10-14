@@ -143,6 +143,20 @@ open class StringifyTextField: UITextField {
     /// Default value is `UIColor.black`.
     @IBInspectable public var lineColorActive: UIColor = UIColor.black
     
+    /// Height of line under the text field for an inactive state.
+    /// Default value is `1`.
+    @IBInspectable public var lineHeightDefault: CGFloat = 1 {
+        didSet {
+            underlineLayer.frame.size.height = lineHeightDefault
+            underlineLayer.cornerRadius = max(lineHeightDefault / 2, 1)
+            setNeedsDisplay()
+        }
+    }
+    
+    /// Height of line under the text field for an active state.
+    /// Default value is `2`.
+    @IBInspectable public var lineHeightActive: CGFloat = 2
+    
     /// Color for border in inactive state. Only for `.border` style.
     /// Default value is `UIColor.clear`
     @IBInspectable public var borderColorDefault: UIColor = UIColor.clear {
@@ -309,6 +323,7 @@ open class StringifyTextField: UITextField {
     
     private let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
     private let frameAnimation = CABasicAnimation(keyPath: "frame.size.height")
+    private let cornerRadiusAnimation = CABasicAnimation(keyPath: "cornerRadius")
     private let borderColorAnimation = CABasicAnimation(keyPath: "borderColor")
     private let borderWidthAnimation = CABasicAnimation(keyPath: "borderWidth")
     private let groupAnimation = CAAnimationGroup()
@@ -452,7 +467,7 @@ open class StringifyTextField: UITextField {
     private func configureBottomLine() {
         borderStyle = .none
         
-        underlineLayer.frame = CGRect(x: 0, y: self.bounds.height, width: self.bounds.width, height: 1)
+        underlineLayer.frame = CGRect(x: 0, y: self.bounds.height, width: self.bounds.width, height: lineHeightDefault)
         underlineLayer.backgroundColor = lineColorDefault.cgColor
         underlineLayer.cornerRadius = 1
         
@@ -938,9 +953,12 @@ private extension StringifyTextField {
         colorAnimation.toValue = lineColorActive.cgColor
         
         frameAnimation.fromValue = underlineLayer.frame.size.height
-        frameAnimation.toValue = underlineLayer.frame.size.height + 1
+        frameAnimation.toValue = lineHeightActive
         
-        groupAnimation.animations = [colorAnimation, frameAnimation]
+        cornerRadiusAnimation.fromValue = underlineLayer.cornerRadius
+        cornerRadiusAnimation.toValue = lineHeightActive / 2
+        
+        groupAnimation.animations = [colorAnimation, frameAnimation, cornerRadiusAnimation]
         groupAnimation.duration = 0.2
         
         underlineLayer.add(groupAnimation, forKey: nil)
@@ -948,7 +966,8 @@ private extension StringifyTextField {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         underlineLayer.backgroundColor = lineColorActive.cgColor
-        underlineLayer.frame.size.height += 1
+        underlineLayer.frame.size.height = lineHeightActive
+        underlineLayer.cornerRadius = lineHeightActive / 2
         CATransaction.commit()
     }
     
@@ -957,7 +976,10 @@ private extension StringifyTextField {
         colorAnimation.toValue = lineColorDefault.cgColor
         
         frameAnimation.fromValue = underlineLayer.frame.size.height
-        frameAnimation.toValue = underlineLayer.frame.size.height - 1
+        frameAnimation.toValue = lineHeightDefault
+        
+        cornerRadiusAnimation.fromValue = underlineLayer.cornerRadius
+        cornerRadiusAnimation.toValue = max(lineHeightDefault / 2, 1)
         
         groupAnimation.animations = [colorAnimation, frameAnimation]
         groupAnimation.duration = 0.2
@@ -967,7 +989,8 @@ private extension StringifyTextField {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         underlineLayer.backgroundColor = lineColorDefault.cgColor
-        underlineLayer.frame.size.height -= 1
+        underlineLayer.frame.size.height = lineHeightDefault
+        underlineLayer.cornerRadius = max(lineHeightDefault / 2, 1)
         CATransaction.commit()
     }
 }
@@ -1041,9 +1064,12 @@ private extension StringifyTextField {
                 groupAnimation.animations = [colorAnimation]
             } else {
                 frameAnimation.fromValue = underlineLayer.frame.size.height
-                frameAnimation.toValue = underlineLayer.frame.size.height + 1
+                frameAnimation.toValue = lineHeightActive
                 
-                groupAnimation.animations = [colorAnimation, frameAnimation]
+                cornerRadiusAnimation.fromValue = underlineLayer.cornerRadius
+                cornerRadiusAnimation.toValue = lineHeightActive / 2
+                
+                groupAnimation.animations = [colorAnimation, frameAnimation, cornerRadiusAnimation]
             }
             
             groupAnimation.duration = 0.2
@@ -1053,7 +1079,8 @@ private extension StringifyTextField {
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             if !isFirstResponder {
-                underlineLayer.frame.size.height += 1
+                underlineLayer.frame.size.height = lineHeightActive
+                underlineLayer.cornerRadius = lineHeightActive / 2
             }
             
             underlineLayer.backgroundColor = errorColor.cgColor
@@ -1085,13 +1112,16 @@ private extension StringifyTextField {
         case .line:
             let targetColor: CGColor
             let height: CGFloat
+            let cornerRadius: CGFloat
             
             if isFirstResponder {
                 targetColor = lineColorActive.cgColor
-                height = underlineLayer.frame.size.height
+                height = lineHeightActive
+                cornerRadius = lineHeightActive / 2
             } else {
                 targetColor = lineColorDefault.cgColor
-                height = underlineLayer.frame.size.height - 1
+                height = lineHeightDefault
+                cornerRadius = max(lineHeightDefault / 2, 1)
             }
             
             colorAnimation.fromValue = underlineLayer.backgroundColor
@@ -1103,7 +1133,10 @@ private extension StringifyTextField {
                 frameAnimation.fromValue = underlineLayer.frame.size.height
                 frameAnimation.toValue = height
                 
-                groupAnimation.animations = [colorAnimation, frameAnimation]
+                cornerRadiusAnimation.fromValue = underlineLayer.cornerRadius
+                cornerRadiusAnimation.toValue = cornerRadius
+                
+                groupAnimation.animations = [colorAnimation, frameAnimation, cornerRadiusAnimation]
             }
             
             groupAnimation.duration = 0.2
@@ -1114,6 +1147,7 @@ private extension StringifyTextField {
             CATransaction.setDisableActions(true)
             underlineLayer.backgroundColor = targetColor
             underlineLayer.frame.size.height = height
+            underlineLayer.cornerRadius = cornerRadius
             CATransaction.commit()
         case .border:
             let targetColor: CGColor
