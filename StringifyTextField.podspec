@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name             = 'StringifyTextField'
-  spec.version          = '1.3.1'
+  spec.version          = '1.3.3'
   spec.summary          = 'Custom UITextField is based on Stringify framework functionality.'
   spec.homepage         = "https://github.com/NovichenkoAnton/StringifyTextField"
 
