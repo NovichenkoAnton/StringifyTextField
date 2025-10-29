@@ -917,7 +917,14 @@ private extension StringifyTextField {
 private extension StringifyTextField {
     func shouldChangeRawText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
         if string.isEmpty {
-            self.text = (text as NSString).replacingCharacters(in: range, with: string)
+            let newText = (text as NSString).replacingCharacters(in: range, with: string)
+            self.text = newText
+            
+            let newCursorPosition = range.location
+            if let newPosition = self.position(from: self.beginningOfDocument, offset: newCursorPosition) {
+                self.selectedTextRange = self.textRange(from: newPosition, to: newPosition)
+            }
+            
             return false
         }
         
@@ -926,7 +933,6 @@ private extension StringifyTextField {
         }
         
         let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
-        
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
         if possibleText.count <= maxLength {
