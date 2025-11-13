@@ -932,15 +932,21 @@ private extension StringifyTextField {
             return false
         }
         
-        let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
-        if possibleText.count <= maxLength {
-            self.text = possibleText
+        if possibleText.count > maxLength {
+            if let currentSelectedRange = self.selectedTextRange {
+                self.selectedTextRange = currentSelectedRange
+            }
+            return false
         }
         
-        if let location = cursorLocation {
-            selectedTextRange = textRange(from: location, to: location)
+        self.text = possibleText
+        
+        let newCursorPosition = range.location + string.count
+        
+        if let newPosition = self.position(from: self.beginningOfDocument, offset: newCursorPosition) {
+            self.selectedTextRange = self.textRange(from: newPosition, to: newPosition)
         }
         
         if possibleText.count == maxLength {

@@ -27,6 +27,7 @@ final class ViewController: UIViewController {
 //            amountTextField.style = .line
             amountTextField.style = .border(cornerRadius: 10)
             amountTextField.textType = .none
+            amountTextField.maxSymbols = 5
             amountTextField.attributedPlaceholder = NSAttributedString(
                 string: NSLocalizedString("PLACEHOLDER", comment: ""),
                 attributes: [
