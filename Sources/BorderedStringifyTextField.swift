@@ -9,7 +9,7 @@
 import UIKit
 
 open class BorderedStringifyTextField: StringifyTextField {
-    // MARK: - Public properies
+    // MARK: - Public properties
     
     public var cornerRadius: CGFloat = .zero {
         didSet {

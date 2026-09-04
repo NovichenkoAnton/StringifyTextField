@@ -15,6 +15,7 @@
 		1A556D0C2427C3DA00924FAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1A556D0A2427C3DA00924FAA /* LaunchScreen.storyboard */; };
 		1AC6697D2EB2519300F39A16 /* StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AC6697C2EB2519300F39A16 /* StringifyTextField.framework */; };
 		1AC6697E2EB2519300F39A16 /* StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1AC6697C2EB2519300F39A16 /* StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D9F9ADFB1E6948C84AE0A576 /* Pods_StringifyExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD10DCDB6CB0DED4B85BBE63 /* Pods_StringifyExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,8 +56,8 @@
 		1AF0B0F224437CF100526EFC /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF91808243F9C5C00C0282C /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD10DCDB6CB0DED4B85BBE63 /* Pods_StringifyExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_StringifyExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF45B7AD547A4C2B780D90B2 /* Pods-StringifyExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StringifyExample.debug.xcconfig"; path = "Target Support Files/Pods-StringifyExample/Pods-StringifyExample.debug.xcconfig"; sourceTree = "<group>"; };
-		F80B5885EF94540C687D8456 /* Pods-StringifyExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StringifyExample.release.xcconfig"; path = "Target Support Files/Pods-StringifyExample/Pods-StringifyExample.release.xcconfig"; sourceTree = "<group>"; };
+		DF45B7AD547A4C2B780D90B2 /* Pods-StringifyExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StringifyExample.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-StringifyExample/Pods-StringifyExample.debug.xcconfig"; sourceTree = "<group>"; };
+		F80B5885EF94540C687D8456 /* Pods-StringifyExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StringifyExample.release.xcconfig"; path = "../../Pods/Target Support Files/Pods-StringifyExample/Pods-StringifyExample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +66,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AC6697D2EB2519300F39A16 /* StringifyTextField.framework in Frameworks */,
+				D9F9ADFB1E6948C84AE0A576 /* Pods_StringifyExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,9 +245,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-StringifyExample/Pods-StringifyExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-StringifyExample/Pods-StringifyExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -421,7 +427,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3T5KF4YGPF;
 				INFOPLIST_FILE = StringifyExample/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -441,7 +447,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3T5KF4YGPF;
 				INFOPLIST_FILE = StringifyExample/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

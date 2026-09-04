@@ -10,36 +10,36 @@ import UIKit
 import Extendy
 
 @objc public protocol StringifyTextFieldDelegate: AnyObject {
-    /// Called when editing is begin
+    /// Called when editing begins.
     /// - Parameter textField: `StringifyTextField`
     @objc optional func didBeginEditing(_ textField: StringifyTextField)
     
-    /// Called when editing is end
+    /// Called when editing ends.
     /// - Parameter textField: `StringifyTextField`
     @objc optional func didEndEditing(_ textField: StringifyTextField)
     
-    /// Called when text field has max inputed symbols
+    /// Called when the text field reaches the maximum number of entered symbols.
     /// - Parameter textField: `StringifyTextField`
     @objc optional func didFilled(_ textField: StringifyTextField)
     
-    /// Called when was inputed/deleted symbol in text field
+    /// Called when a symbol is entered or deleted in the text field.
     /// - Parameter textField: `StringifyTextField`
     @objc optional func didEndChanging(_ textField: StringifyTextField)
     
-    /// Called when text field is changed
+    /// Called when the text field is changed.
     /// - Parameters:
     ///   - textField: `StringifyTextField`
     ///   - range: The range of characters to be changed
     ///   - string: Replacement string
     @objc optional func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String)
     
-    /// Called when clear button was tapped
+    /// Called when the clear button is tapped.
     /// - Parameter textField: `StringifyTextField`
     @objc optional func textFieldCleared(_ textField: StringifyTextField)
 }
 
 @objc public protocol StringifyTrailingActionDelegate: AnyObject {
-    /// Detect tap on trailing view
+    /// Called when the trailing view is tapped.
     /// - Parameter sender: `UIButton`
     func didTapTrailing(_ sender: UIButton, textField: StringifyTextField)
 }
@@ -55,10 +55,12 @@ open class StringifyTextField: UITextField {
     /**
      Possible text types for `StringifyTextField`
      
-     - **amount**: formatted text with sum type, e.g., "1 200,99"
+     - **amount**: formatted amount, e.g., "1 200,99"
      - **creditCard**: formatted text compatible with credit cards, e.g., "1234 5678 9012 3456"
      - **IBAN**: formatted text compatible with IBAN, e.g., "BY12 BLBB 1234 5678 0000 1234 5678"
-     - **expDate**: expired date of credit cards, e.g., "03/22"
+     - **expDate**: expiration date of a credit card, e.g., "03/22"
+     - **cvv**: CVV code of a credit card, e.g., "123"
+     - **none**: unformatted text with optional validation
      */
     public enum TextType: UInt {
         case amount = 0, creditCard, IBAN, expDate, cvv, none
@@ -99,7 +101,7 @@ open class StringifyTextField: UITextField {
     }
     
     /// Add grouping separator for `NumberFormatter`. Only for `.amount` type.
-    /// Default value is `true`
+    /// Default value is `true`.
     @IBInspectable public var needGroupingSeparator: Bool = true {
         didSet {
             if needGroupingSeparator {
@@ -119,14 +121,14 @@ open class StringifyTextField: UITextField {
     }
     
     /// Decimal separator between integer and fraction parts. Only for `.amount` type.
-    /// Default value is `,`(comma).
+    /// Default value is `,` (comma).
     @IBInspectable public var decimalSeparator: String = "," {
         didSet {
             numberFormatter.decimalSeparator = decimalSeparator
         }
     }
     
-    /// Date format for getting exp date from `plainValue` property.
+    /// Date format for getting the expiration date from the `plainValue` property.
     /// Default value is "MMyy".
     @IBInspectable public var dateFormat: String = "MMyy"
     
@@ -143,7 +145,7 @@ open class StringifyTextField: UITextField {
     /// Default value is `UIColor.black`.
     @IBInspectable public var lineColorActive: UIColor = UIColor.black
     
-    /// Height of line under the text field for an inactive state.
+    /// Height of the line under the text field for an inactive state.
     /// Default value is `1`.
     @IBInspectable public var lineHeightDefault: CGFloat = 1 {
         didSet {
@@ -153,12 +155,12 @@ open class StringifyTextField: UITextField {
         }
     }
     
-    /// Height of line under the text field for an active state.
+    /// Height of the line under the text field for an active state.
     /// Default value is `2`.
     @IBInspectable public var lineHeightActive: CGFloat = 2
     
     /// Color for border in inactive state. Only for `.border` style.
-    /// Default value is `UIColor.clear`
+    /// Default value is `UIColor.clear`.
     @IBInspectable public var borderColorDefault: UIColor = UIColor.clear {
         didSet {
             if case .border = style {
@@ -198,18 +200,18 @@ open class StringifyTextField: UITextField {
     @IBInspectable public var errorLabelTopPadding: CGFloat = 4.0
     
     /// Error message to display.
-    /// Default value is empty string.
+    /// Default value is an empty string.
     @IBInspectable public var errorMessage: String = "" {
         didSet {
             errorLabel.text = errorMessage
         }
     }
     
-    /// Whether to show error label.
+    /// Whether to show the error label.
     /// Default value is `true`.
     @IBInspectable public var showsErrorLabel: Bool = true
     
-    /// Set up floated placeholder for `UITextField`
+    /// Set up a floating placeholder for `UITextField`.
     /// Default value is `false`.
     @IBInspectable public var floatingPlaceholder: Bool = false {
         didSet {
@@ -234,11 +236,11 @@ open class StringifyTextField: UITextField {
     /// Default value is `UIColor.black`.
     @IBInspectable public var floatingPlaceholderActiveColor: UIColor = UIColor.black
     
-    /// Padding between text rect and floating label
-    /// Default value is 0
+    /// Padding between text rect and floating label.
+    /// Default value is 0.
     @IBInspectable public var floatingPadding: CGFloat = 0
     
-    /// Image on the right side of `LineTextField`.
+    /// Image on the right side of `StringifyTextField`.
     @IBInspectable public var trailingImage: UIImage? {
         didSet {
             configureTrailingImage()
@@ -268,7 +270,7 @@ open class StringifyTextField: UITextField {
     
     // MARK: - Public properties
     
-    /// Specific `TextType` for formatting text in textfield.
+    /// Specific `TextType` for formatting text in the text field.
     /// Default value is `.amount`.
     public var textType: TextType = .amount {
         didSet {
@@ -277,7 +279,7 @@ open class StringifyTextField: UITextField {
     }
     
     /// Specific `Style` for the text field.
-    /// Default value us `.native(borderStyle: .roundedRect)`.
+    /// Default value is `.native(borderStyle: .roundedRect)`.
     public var style: Style = .native(borderStyle: .roundedRect) {
         didSet {
             configureStyle()
@@ -337,7 +339,7 @@ open class StringifyTextField: UITextField {
     
     // MARK: - Public properties
     
-    ///Computed property for getting clean value (without inner whitespaces)
+    /// Computed property for getting the clean value (without inner whitespaces).
     public var plainValue: String {
         switch textType {
         case .amount:
@@ -355,11 +357,11 @@ open class StringifyTextField: UITextField {
         }
     }
     
-    /// Set animation when floating placeholder is redrawn.
+    /// Enable animation when the floating placeholder is redrawn.
     /// Default value is `true`.
     public var floatingPlaceholderShowWithAnimation: Bool = true
     
-    /// Regular expression for `.none` text type to validate.
+    /// Regular expression used to validate `.none` text type.
     public var pattern: String.RegExpPattern?
     
     // MARK: - Overridden properties
@@ -610,61 +612,88 @@ open class StringifyTextField: UITextField {
         }
         
         let buttonSize = bounds.height * 0.6
-        
-        let xPosition: CGFloat
-        if case .border = style {
-            xPosition = bounds.width - buttonSize - trailingPadding - borderTextPadding
-        } else {
-            xPosition = bounds.width - buttonSize - trailingPadding
-        }
-        
+        let xPosition = bounds.width - buttonSize - trailingPadding - horizontalInset(for: style)
         let yPosition = (bounds.height - buttonSize) / 2
         
         return CGRect(x: xPosition, y: yPosition, width: buttonSize, height: buttonSize)
     }
     
-    open override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        var rect = super.editingRect(forBounds: bounds)
+    open override func clearButtonRect(forBounds bounds: CGRect) -> CGRect {
+        let rect = super.clearButtonRect(forBounds: bounds)
+        guard case .border = style else { return rect }
         
-        if case .border = style {
-            rect.origin.x += borderTextPadding
-            rect.size.width -= borderTextPadding * 2
+        return CGRect(
+            x: rightAccessoryEdge(forBounds: bounds) - rect.width,
+            y: rect.origin.y,
+            width: rect.width,
+            height: rect.height
+        )
+    }
+    
+    open override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        paddedTextRect(from: super.editingRect(forBounds: bounds), bounds: bounds)
+    }
+    
+    open override func textRect(forBounds bounds: CGRect) -> CGRect {
+        paddedTextRect(from: super.textRect(forBounds: bounds), bounds: bounds)
+    }
+    
+    open override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        textRect(forBounds: bounds)
+    }
+    
+    private func paddedTextRect(from original: CGRect, bounds: CGRect) -> CGRect {
+        var rect = original
+        let inset = horizontalInset(for: style)
+        
+        if inset > 0 {
+            rect.origin.x += inset
+            rect.size.width = max(0, textRightEdge(forBounds: bounds) - rect.origin.x)
+            return rect
         }
         
         if trailingImage != nil {
             let buttonSize = bounds.height * 0.6
-            let trailingViewWidth = buttonSize + trailingPadding
-            
-            rect.size.width = bounds.width - rect.origin.x - trailingViewWidth
-            
-            if case .border = style {
-                rect.size.width -= borderTextPadding * 2
-            }
+            rect.size.width = bounds.width - rect.origin.x - buttonSize - trailingPadding
         }
         
         return rect
     }
     
-    open override func textRect(forBounds bounds: CGRect) -> CGRect {
-        var rect = super.textRect(forBounds: bounds)
-        
+    private func horizontalInset(for style: Style) -> CGFloat {
         if case .border = style {
-            rect.origin.x += borderTextPadding
-            rect.size.width -= borderTextPadding * 2
+            return borderTextPadding
         }
-        
+        return 0
+    }
+    
+    private func rightAccessoryEdge(forBounds bounds: CGRect) -> CGFloat {
         if trailingImage != nil {
-            let buttonSize = bounds.height * 0.6
-            let trailingViewWidth = buttonSize + trailingPadding
-            
-            rect.size.width = bounds.width - rect.origin.x - trailingViewWidth
-            
-            if case .border = style {
-                rect.size.width -= borderTextPadding * 2
-            }
+            return rightViewRect(forBounds: bounds).minX
         }
+        return bounds.width - horizontalInset(for: style)
+    }
+    
+    private func textRightEdge(forBounds bounds: CGRect) -> CGFloat {
+        if isClearButtonVisible {
+            return clearButtonRect(forBounds: bounds).minX
+        }
+        return rightAccessoryEdge(forBounds: bounds)
+    }
+    
+    private var isClearButtonVisible: Bool {
+        guard hasText else { return false }
         
-        return rect
+        switch clearButtonMode {
+        case .always:
+            return true
+        case .whileEditing:
+            return isEditing
+        case .unlessEditing:
+            return !isEditing
+        default:
+            return false
+        }
     }
     
     // MARK: - Events
@@ -748,7 +777,7 @@ private extension StringifyTextField {
     }
     
     func shouldChangeSumText(in range: NSRange, with string: String, and text: String) -> Bool {
-        //Removing characters
+        // Removing characters
         if string.isEmpty {
             if text.count > 1 {
                 let possibleText = String(text.dropLast())
@@ -770,7 +799,7 @@ private extension StringifyTextField {
         }
         
         
-        //Format inputed characters
+        // Format entered characters
         let adjustedInputedCharacter: InputedCharacter
         
         if string.rangeOfCharacter(from: CharacterSet.decimalDigits) != nil {
@@ -1209,10 +1238,10 @@ private extension StringifyTextField {
     }
 }
 
-// MARK: - Floated placeholder configure
+// MARK: - Floating placeholder configuration
 
 private extension StringifyTextField {
-    /// Get font `UIFont` font for floated label
+    /// Get `UIFont` for the floating label.
     /// - Returns: Correct `UIFont`
     func labelFont() -> UIFont {
         var currentFont = UIFont.systemFont(ofSize: 17.0)
@@ -1228,8 +1257,8 @@ private extension StringifyTextField {
         return currentFont.withSize((currentFont.pointSize * 0.7).rounded())
     }
     
-    /// Floated label height adjustemnt
-    /// - Returns: Adjustment height
+    /// Floating label height adjustment.
+    /// - Returns: Adjusted height
     func floatedLabelHeight() -> CGFloat {
         labelFont().lineHeight + 4.0
     }
@@ -1238,8 +1267,8 @@ private extension StringifyTextField {
         updateFloatedLabelVisibility(animated: animated)
     }
     
-    /// Get correct frame of floated label
-    /// - Returns: Frame of floated label
+    /// Get the correct frame of the floating label.
+    /// - Returns: Frame of the floating label
     func floatedLabelRect() -> CGRect {
         let labelHeight = floatedLabelHeight()
         
@@ -1254,8 +1283,8 @@ private extension StringifyTextField {
         return CGRect(x: 0, y: bounds.origin.y, width: bounds.size.width, height: labelHeight)
     }
     
-    /// Update alpha and frame of floated label
-    /// - Parameter animated: with animation or not
+    /// Update alpha and frame of the floating label.
+    /// - Parameter animated: Whether to animate the update.
     func updateFloatedLabelVisibility(animated: Bool) {
         let alpha: CGFloat = hasText ? 1.0 : 0.0
         let frame = floatedLabelRect()
@@ -1271,8 +1300,8 @@ private extension StringifyTextField {
         }
     }
     
-    /// Update text color of floated label
-    /// - Parameter editing: `true` if `UITextField` is editing now
+    /// Update text color of the floating label.
+    /// - Parameter editing: `true` if `UITextField` is being edited
     func updateFloatedLabelColor(editing: Bool, animated: Bool) {
         let animationBlock = { () -> Void in
             if editing && self.hasText {

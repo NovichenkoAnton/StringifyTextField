@@ -5,6 +5,9 @@
       location = "group:StringifyExample.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:../StringifyTextField.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>

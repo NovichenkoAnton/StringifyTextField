@@ -1,10 +1,14 @@
-# Uncomment the next line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '12.0'
+use_frameworks!
+
+workspace 'StringifyTextField.xcworkspace'
 
 target 'StringifyTextField' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
+  project 'StringifyTextField.xcodeproj'
+  pod 'Extendy', '~> 1.1'
+end
 
-  # Pods for StringifyTextField
+target 'StringifyExample' do
+  project 'Example/StringifyExample.xcodeproj'
   pod 'Extendy', '~> 1.1'
 end

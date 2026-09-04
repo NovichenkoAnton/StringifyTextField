@@ -38,13 +38,15 @@ final class ViewController: UIViewController {
             amountTextField.backgroundColor = UIColor.white.withAlphaComponent(0.4)
             amountTextField.borderColorActive = UIColor(red: 0.01, green: 0.50, blue: 1.00, alpha: 1.00)
             amountTextField.borderWidthActive = 2
-            amountTextField.floatingPlaceholder = false
+            amountTextField.floatingPlaceholder = true
             amountTextField.errorDisplayDuration = 1.5
             amountTextField.errorColor = UIColor(red: 1.00, green: 0.27, blue: 0.23, alpha: 1.00)
             amountTextField.errorMessage = "Some error"
             amountTextField.errorLabelTopPadding = 10
             amountTextField.errorLabelFont = UIFont.systemFont(ofSize: 12)
             amountTextField.pattern = .own(pattern: "[A-Za-z0-9]")
+//            amountTextField.trailingImage = UIImage(named: "image")
+            amountTextField.clearButtonMode = .whileEditing
 		}
 	}
 
