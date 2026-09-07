@@ -26,6 +26,16 @@ import Extendy
     /// - Parameter textField: `StringifyTextField`
     @objc optional func didEndChanging(_ textField: StringifyTextField)
     
+    /// Asks whether the specified text should be changed.
+    /// Return `false` to keep the current text, `true` to allow the change.
+    /// If unimplemented, the change is allowed.
+    /// - Parameters:
+    ///   - textField: `StringifyTextField`
+    ///   - range: The range of characters to be replaced
+    ///   - string: The replacement string
+    /// - Returns: `true` if the text should be changed, otherwise `false`
+    @objc optional func shouldChangeCharacters(_ textField: StringifyTextField, in range: NSRange, with string: String) -> Bool
+    
     /// Called when the text field is changed.
     /// - Parameters:
     ///   - textField: `StringifyTextField`
@@ -1346,6 +1356,10 @@ extension StringifyTextField: UITextFieldDelegate {
     
     open func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let text = textField.text else { return false }
+        
+        if stDelegate?.shouldChangeCharacters?(self, in: range, with: string) == false {
+            return false
+        }
         
         stDelegate?.didStartChanging?(self, in: range, with: string)
         defer {

@@ -161,6 +161,11 @@ extension ViewController: StringifyTextFieldDelegate {
 		print("textField filled with text \(textField.text!)")
 	}
 
+	func shouldChangeCharacters(_ textField: StringifyTextField, in range: NSRange, with string: String) -> Bool {
+		print("should change characters in \(textField.text!) with: \(string)")
+		return true
+	}
+
 	func didStartChanging(_ textField: StringifyTextField, in range: NSRange, with string: String) {
 		print("textField start changing text: \(textField.text!) in with: \(string)")
 	}
