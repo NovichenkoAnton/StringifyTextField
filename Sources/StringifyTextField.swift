@@ -250,6 +250,17 @@ open class StringifyTextField: UITextField {
     /// Default value is 0.
     @IBInspectable public var floatingPadding: CGFloat = 0
     
+    /// Font for the floating placeholder.
+    /// Default value is `UIFont.systemFont(ofSize: 14)`.
+    public var floatingPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14) {
+        didSet {
+            floatedLabel.font = floatingPlaceholderFont
+            if floatingPlaceholder {
+                setNeedsLayout()
+            }
+        }
+    }
+    
     /// Image on the right side of `StringifyTextField`.
     @IBInspectable public var trailingImage: UIImage? {
         didSet {
@@ -505,7 +516,7 @@ open class StringifyTextField: UITextField {
         
         floatedLabel.alpha = 1
         floatedLabel.textColor = UIColor.black
-        floatedLabel.font = labelFont()
+        floatedLabel.font = floatingPlaceholderFont
         if let attributedPlaceholder = self.attributedPlaceholder {
             floatedLabel.text = attributedPlaceholder.string
         } else {
@@ -1284,26 +1295,10 @@ private extension StringifyTextField {
 // MARK: - Floating placeholder configuration
 
 private extension StringifyTextField {
-    /// Get `UIFont` for the floating label.
-    /// - Returns: Correct `UIFont`
-    func labelFont() -> UIFont {
-        var currentFont = UIFont.systemFont(ofSize: 17.0)
-        
-        if let attributedText = self.attributedText, attributedText.length > 0 {
-            currentFont = attributedText.attribute(.font, at: 0, effectiveRange: nil) as! UIFont
-        }
-        
-        if let font = self.font {
-            currentFont = font
-        }
-        
-        return currentFont.withSize((currentFont.pointSize * 0.7).rounded())
-    }
-    
     /// Floating label height adjustment.
     /// - Returns: Adjusted height
     func floatedLabelHeight() -> CGFloat {
-        labelFont().lineHeight + 4.0
+        floatingPlaceholderFont.lineHeight + 4.0
     }
     
     func updateFloatedLabel(animated: Bool = false) {
