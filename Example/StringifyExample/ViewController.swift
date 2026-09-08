@@ -45,8 +45,11 @@ final class ViewController: UIViewController {
             amountTextField.errorLabelTopPadding = 10
             amountTextField.errorLabelFont = UIFont.systemFont(ofSize: 12)
             amountTextField.pattern = .own(pattern: "[A-Za-z0-9]")
-//            amountTextField.trailingImage = UIImage(named: "image")
+            amountTextField.trailingImage = UIImage(named: "image")
+            amountTextField.tintAdjustmentMode = .automatic
             amountTextField.clearButtonMode = .whileEditing
+            amountTextField.isEnabled = false
+            amountTextField.allowsTrailingActionWhenDisabled = true
 		}
 	}
 

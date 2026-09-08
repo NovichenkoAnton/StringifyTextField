@@ -278,6 +278,14 @@ open class StringifyTextField: UITextField {
     /// Default value is 0.
     @IBInspectable public var trailingPadding: CGFloat = 0
     
+    /// Allows tapping the trailing button while the text field is disabled.
+    /// Default value is `false`.
+    @IBInspectable public var allowsTrailingActionWhenDisabled: Bool = false {
+        didSet {
+            updateTrailingButtonInteraction()
+        }
+    }
+    
     // MARK: - Public properties
     
     /// Specific `TextType` for formatting text in the text field.
@@ -393,6 +401,12 @@ open class StringifyTextField: UITextField {
             if floatingPlaceholder {
                 floatedLabel.textAlignment = textAlignment
             }
+        }
+    }
+    
+    open override var isEnabled: Bool {
+        didSet {
+            updateTrailingButtonInteraction()
         }
     }
     
@@ -516,6 +530,14 @@ open class StringifyTextField: UITextField {
         
         rightViewMode = .always
         rightView = trailingButton
+        updateTrailingButtonInteraction()
+    }
+    
+    private func updateTrailingButtonInteraction() {
+        let isTrailingActionAvailable = isEnabled || allowsTrailingActionWhenDisabled
+        trailingButton.isEnabled = isTrailingActionAvailable
+        trailingButton.isUserInteractionEnabled = isTrailingActionAvailable
+        trailingButton.tintAdjustmentMode = (!isEnabled && allowsTrailingActionWhenDisabled) ? .normal : .automatic
     }
     
     private func setupErrorLabel() {
@@ -535,6 +557,17 @@ open class StringifyTextField: UITextField {
     }
     
     // MARK: - Overridden
+    
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if allowsTrailingActionWhenDisabled, !isEnabled, trailingImage != nil, rightView != nil, !trailingButton.isHidden {
+            let pointInButton = trailingButton.convert(point, from: self)
+            if trailingButton.point(inside: pointInButton, with: event) {
+                return trailingButton
+            }
+        }
+        
+        return super.hitTest(point, with: event)
+    }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
