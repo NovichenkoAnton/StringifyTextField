@@ -53,17 +53,26 @@ final class ViewController: UIViewController {
 		}
 	}
 
-	private lazy var manualTextField: BorderedStringifyTextField = {
-		let manualTextField = BorderedStringifyTextField(type: .amount)
-		manualTextField.stActionDelegate = self
-        manualTextField.stDelegate = self
-        manualTextField.activeBorderColor = UIColor.blue
-        manualTextField.errorBorderColor = UIColor.red
-        manualTextField.cornerRadius = 12
-        manualTextField.borderWidth = 2
-        manualTextField.backgroundColor = UIColor.white
-		return manualTextField
-	}()
+    private lazy var innerFloatedTextField: InnerFloatedStringifyTextField = {
+        let innerFloatedTextField = InnerFloatedStringifyTextField(type: .amount, cornerRadius: 12)
+        innerFloatedTextField.stDelegate = self
+        innerFloatedTextField.placeholder = "Amount"
+        innerFloatedTextField.clearButtonMode = .whileEditing
+        innerFloatedTextField.font = UIFont.systemFont(ofSize: 16)
+        innerFloatedTextField.textColor = UIColor.white
+        innerFloatedTextField.tintColor = UIColor(red: 0.25, green: 0.55, blue: 1.00, alpha: 1)
+        innerFloatedTextField.floatingPlaceholderFont = UIFont.systemFont(ofSize: 14)
+        innerFloatedTextField.floatingPlaceholderColor = UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1)
+        innerFloatedTextField.floatingPlaceholderActiveColor = UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1)
+        innerFloatedTextField.borderColorDefault = UIColor.clear
+        innerFloatedTextField.borderColorActive = UIColor(red: 0.25, green: 0.55, blue: 1.00, alpha: 1)
+        innerFloatedTextField.borderWidthInactive = 0
+        innerFloatedTextField.borderWidthActive = 1
+        innerFloatedTextField.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+        innerFloatedTextField.keyboardAppearance = .dark
+        innerFloatedTextField.translatesAutoresizingMaskIntoConstraints = false
+        return innerFloatedTextField
+    }()
 
     @IBOutlet var errorButton: UIButton!
     // MARK: - Lifecycle
@@ -96,10 +105,13 @@ final class ViewController: UIViewController {
 
 		decimalSwitcher.isOn = stringifyTextField.decimal
 
-//        let width = view.frame.width - 40
-//        manualTextField.frame = CGRect(x: 20, y: errorButton.frame.origin.y, width: width, height: 40)
-
-//		view.addSubview(manualTextField)
+        view.addSubview(innerFloatedTextField)
+        NSLayoutConstraint.activate([
+            innerFloatedTextField.topAnchor.constraint(equalTo: errorButton.bottomAnchor, constant: 24),
+            innerFloatedTextField.leadingAnchor.constraint(equalTo: amountTextField.leadingAnchor),
+            innerFloatedTextField.trailingAnchor.constraint(equalTo: amountTextField.trailingAnchor),
+            innerFloatedTextField.heightAnchor.constraint(equalToConstant: 62)
+        ])
 	}
 
 	// MARK: - Events
@@ -135,7 +147,7 @@ final class ViewController: UIViewController {
     
     @IBAction func showError(_ sender: Any) {
         amountTextField.showError()
-//        manualTextField.showError()
+        innerFloatedTextField.showError(message: "Error 2")
     }
 }
 
