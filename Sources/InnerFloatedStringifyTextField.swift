@@ -330,8 +330,17 @@ private extension InnerFloatedStringifyTextField {
         return bounds.width - contentInsets.right
     }
 
+    var usesActiveFloatedLabelColor: Bool {
+        switch floatedPlaceholderDisplay {
+        case .onInput:
+            return isFloatedLabelAtTop
+        case .alwaysOnTop:
+            return isFirstResponder
+        }
+    }
+
     func updateInnerFloatedLabelColor(animated: Bool) {
-        let color = isFirstResponder ? floatingPlaceholderActiveColor : floatingPlaceholderColor
+        let color = usesActiveFloatedLabelColor ? floatingPlaceholderActiveColor : floatingPlaceholderColor
         let animationBlock = {
             self.innerFloatedLabel.textColor = color
         }

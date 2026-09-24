@@ -65,7 +65,7 @@ final class ViewController: UIViewController {
         innerFloatedTextField.tintColor = UIColor(red: 0.25, green: 0.55, blue: 1.00, alpha: 1)
         innerFloatedTextField.floatingPlaceholderFont = UIFont.systemFont(ofSize: 14)
         innerFloatedTextField.floatingPlaceholderColor = UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1)
-        innerFloatedTextField.floatingPlaceholderActiveColor = UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1)
+        innerFloatedTextField.floatingPlaceholderActiveColor = UIColor.blue
         innerFloatedTextField.borderColorDefault = UIColor.clear
         innerFloatedTextField.borderColorActive = UIColor(red: 0.25, green: 0.55, blue: 1.00, alpha: 1)
         innerFloatedTextField.borderWidthInactive = 1
