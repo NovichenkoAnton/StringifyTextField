@@ -8,16 +8,45 @@
 
 import UIKit
 
-/// `StringifyTextField` with a persistent inner floated label at the top of the field bounds.
+/// `StringifyTextField` with an inner floated label.
 /// The standard clear button stays vertically centered; value text is clipped to the button
 /// and truncated with an ellipsis.
 open class InnerFloatedStringifyTextField: StringifyTextField {
+    /// How the inner floated label is shown.
+    public enum FloatedPlaceholderDisplay {
+        /// Label stays at the top of the field, including while the field is empty.
+        case alwaysOnTop
+        /// Label occupies the text position until a value is entered, then floats to the top.
+        case onInput
+    }
+
     // MARK: - Public properties
+
+    /// Floated label visibility.
+    /// Default value is `.alwaysOnTop`.
+    public var floatedPlaceholderDisplay: FloatedPlaceholderDisplay = .alwaysOnTop {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
+    /// Font size of the floated label.
+    /// Default value is `14`.
+    @IBInspectable public var floatedLabelFontSize: CGFloat = 14 {
+        didSet {
+            guard floatedLabelFontSize != oldValue else { return }
+
+            floatingPlaceholderFont = floatingPlaceholderFont.withSize(floatedLabelFontSize)
+            invalidateIntrinsicContentSize()
+            setNeedsLayout()
+        }
+    }
 
     /// Insets between the field bounds and inner content.
     /// Default value is `UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)`.
     public var contentInsets: UIEdgeInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16) {
         didSet {
+            invalidateIntrinsicContentSize()
             setNeedsLayout()
         }
     }
@@ -26,6 +55,7 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
     /// Default value is `2`.
     public var labelToTextSpacing: CGFloat = 2 {
         didSet {
+            invalidateIntrinsicContentSize()
             setNeedsLayout()
         }
     }
@@ -34,12 +64,22 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
 
     private let innerFloatedLabel: UILabel = {
         let innerFloatedLabel = UILabel()
-        innerFloatedLabel.numberOfLines = 1
         innerFloatedLabel.lineBreakMode = .byTruncatingTail
-        innerFloatedLabel.isUserInteractionEnabled = false
         return innerFloatedLabel
     }()
-    
+
+    private var isLabelFloated = true
+    private var isAnimatingFloatedLabel = false
+
+    private var isFloatedLabelAtTop: Bool {
+        switch floatedPlaceholderDisplay {
+        case .alwaysOnTop:
+            return true
+        case .onInput:
+            return hasText
+        }
+    }
+
     private var isClearButtonDisplayed: Bool {
         guard hasText else { return false }
 
@@ -54,7 +94,15 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
             return false
         }
     }
-    
+
+    private var valueFont: UIFont {
+        font ?? UIFont.systemFont(ofSize: 17)
+    }
+
+    private var floatedLabelFont: UIFont {
+        floatingPlaceholderFont.withSize(floatedLabelFontSize)
+    }
+
     // MARK: - Overridden properties
 
     open override var placeholder: String? {
@@ -78,12 +126,13 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
     open override var font: UIFont? {
         didSet {
             invalidateIntrinsicContentSize()
+            setNeedsLayout()
         }
     }
 
     open override var intrinsicContentSize: CGSize {
-        let labelHeight = ceil(floatingPlaceholderFont.lineHeight)
-        let textHeight = ceil((font ?? UIFont.systemFont(ofSize: 17)).lineHeight)
+        let labelHeight = ceil(floatedLabelFont.lineHeight)
+        let textHeight = ceil(valueFont.lineHeight)
         let height = contentInsets.top + labelHeight + labelToTextSpacing + textHeight + contentInsets.bottom
 
         return CGSize(width: UIView.noIntrinsicMetric, height: height)
@@ -115,21 +164,50 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
     open override func layoutSubviews() {
         super.layoutSubviews()
 
-        innerFloatedLabel.font = floatingPlaceholderFont
-        innerFloatedLabel.frame = innerFloatedLabelRect(forBounds: bounds)
+        let floated = isFloatedLabelAtTop
+        let targetFrame = floated ? floatedLabelRect(forBounds: bounds) : restingValueRect(forBounds: bounds)
+        let targetFont = floated ? floatedLabelFont : valueFont
+        let isInitialLayout = innerFloatedLabel.frame == .zero
+        let shouldAnimate = !isInitialLayout && isLabelFloated != floated && !isAnimatingFloatedLabel
+
         innerFloatedLabel.text = attributedPlaceholder?.string ?? placeholder
         updateInnerFloatedLabelColor(animated: false)
-        bringSubviewToFront(innerFloatedLabel)
+
+        if shouldAnimate {
+            isLabelFloated = floated
+            isAnimatingFloatedLabel = true
+
+            UIView.animate(
+                withDuration: 0.25,
+                delay: 0,
+                options: [.curveEaseOut, .beginFromCurrentState],
+                animations: {
+                    self.innerFloatedLabel.frame = targetFrame
+                    self.innerFloatedLabel.font = targetFont
+                },
+                completion: { _ in
+                    self.isAnimatingFloatedLabel = false
+                }
+            )
+        } else if !isAnimatingFloatedLabel {
+            innerFloatedLabel.frame = targetFrame
+            innerFloatedLabel.font = targetFont
+            isLabelFloated = floated
+        }
 
         applyDisplayLabelTruncation()
+
+        if !innerFloatedLabel.frame.intersects(valueRect(forBounds: bounds)) {
+            bringSubviewToFront(innerFloatedLabel)
+        }
     }
 
     open override func textRect(forBounds bounds: CGRect) -> CGRect {
-        innerTextRect(from: super.textRect(forBounds: bounds), bounds: bounds)
+        valueRect(forBounds: bounds)
     }
 
     open override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        innerTextRect(from: super.editingRect(forBounds: bounds), bounds: bounds)
+        valueRect(forBounds: bounds)
     }
 
     open override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
@@ -140,7 +218,7 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
         let rect = super.clearButtonRect(forBounds: bounds)
 
         return CGRect(
-            x: rect.origin.x,
+            x: bounds.width - contentInsets.right - rect.width,
             y: (bounds.height - rect.height) / 2,
             width: rect.width,
             height: rect.height
@@ -152,11 +230,13 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
     override open func textFieldDidBeginEditing(_ textField: UITextField) {
         super.textFieldDidBeginEditing(textField)
         updateInnerFloatedLabelColor(animated: true)
+        setNeedsLayout()
     }
 
     override open func textFieldDidEndEditing(_ textField: UITextField) {
         super.textFieldDidEndEditing(textField)
         updateInnerFloatedLabelColor(animated: true)
+        setNeedsLayout()
     }
 }
 
@@ -166,7 +246,7 @@ private extension InnerFloatedStringifyTextField {
     func setup() {
         applyInnerFloatedConfiguration()
 
-        innerFloatedLabel.font = floatingPlaceholderFont
+        innerFloatedLabel.font = floatedLabelFont
         innerFloatedLabel.textColor = floatingPlaceholderColor
         innerFloatedLabel.textAlignment = textAlignment
         syncInnerFloatedLabel()
@@ -191,34 +271,63 @@ private extension InnerFloatedStringifyTextField {
         innerFloatedLabel.text = attributedPlaceholder?.string ?? placeholder
     }
 
-    func innerFloatedLabelRect(forBounds bounds: CGRect) -> CGRect {
-        let xPosition = contentInsets.left
-        let rightEdge = isClearButtonDisplayed
-            ? clearButtonRect(forBounds: bounds).minX
-            : bounds.width - contentInsets.right
+    func floatedLabelRect(forBounds bounds: CGRect) -> CGRect {
+        let rightEdge = contentRightEdge(forBounds: bounds)
 
         return CGRect(
-            x: xPosition,
+            x: contentInsets.left,
             y: contentInsets.top,
-            width: max(0, rightEdge - xPosition),
-            height: ceil(floatingPlaceholderFont.lineHeight)
+            width: max(0, rightEdge - contentInsets.left),
+            height: ceil(floatedLabelFont.lineHeight)
         )
     }
 
-    func innerTextRect(from original: CGRect, bounds: CGRect) -> CGRect {
-        let top = innerFloatedLabelRect(forBounds: bounds).maxY + labelToTextSpacing
-        let height = max(0, bounds.height - top - contentInsets.bottom)
-        let rightEdge = isClearButtonDisplayed
-            ? clearButtonRect(forBounds: bounds).minX
-            : original.maxX
-        let width = max(0, rightEdge - original.origin.x)
+    func restingValueRect(forBounds bounds: CGRect) -> CGRect {
+        let textHeight = ceil(valueFont.lineHeight)
+        let topLimit = contentInsets.top
+        let bottomLimit = max(topLimit + textHeight, bounds.height - contentInsets.bottom)
+        let availableHeight = bottomLimit - topLimit
+        let yPosition = topLimit + max(0, (availableHeight - textHeight) / 2)
+        let rightEdge = contentRightEdge(forBounds: bounds)
 
         return CGRect(
-            x: original.origin.x,
-            y: top,
-            width: width,
-            height: height
+            x: contentInsets.left,
+            y: yPosition,
+            width: max(0, rightEdge - contentInsets.left),
+            height: textHeight
         )
+    }
+
+    func valueRect(forBounds bounds: CGRect) -> CGRect {
+        guard isFloatedLabelAtTop else {
+            return restingValueRect(forBounds: bounds)
+        }
+
+        let textHeight = ceil(valueFont.lineHeight)
+        let slotTop = floatedLabelRect(forBounds: bounds).maxY + labelToTextSpacing
+        let slotBottom = max(slotTop + textHeight, bounds.height - contentInsets.bottom)
+        let slotHeight = slotBottom - slotTop
+        let yPosition = slotTop + max(0, (slotHeight - textHeight) / 2)
+        let rightEdge = contentRightEdge(forBounds: bounds)
+
+        return CGRect(
+            x: contentInsets.left,
+            y: yPosition,
+            width: max(0, rightEdge - contentInsets.left),
+            height: max(textHeight, slotBottom - yPosition)
+        )
+    }
+
+    func contentRightEdge(forBounds bounds: CGRect) -> CGFloat {
+        if isClearButtonDisplayed {
+            return clearButtonRect(forBounds: bounds).minX
+        }
+
+        if trailingImage != nil {
+            return rightViewRect(forBounds: bounds).minX
+        }
+
+        return bounds.width - contentInsets.right
     }
 
     func updateInnerFloatedLabelColor(animated: Bool) {

@@ -54,20 +54,22 @@ final class ViewController: UIViewController {
 	}
 
     private lazy var innerFloatedTextField: InnerFloatedStringifyTextField = {
-        let innerFloatedTextField = InnerFloatedStringifyTextField(type: .amount, cornerRadius: 12)
+        let innerFloatedTextField = InnerFloatedStringifyTextField(type: .amount, cornerRadius: 10)
+        innerFloatedTextField.contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         innerFloatedTextField.stDelegate = self
         innerFloatedTextField.placeholder = "Amount"
-        innerFloatedTextField.clearButtonMode = .whileEditing
-        innerFloatedTextField.font = UIFont.systemFont(ofSize: 16)
-        innerFloatedTextField.textColor = UIColor.white
+        innerFloatedTextField.floatedPlaceholderDisplay = .onInput
+        innerFloatedTextField.trailingImage = UIImage(named: "image")
+        innerFloatedTextField.font = UIFont.systemFont(ofSize: 17)
+        innerFloatedTextField.textColor = UIColor.black
         innerFloatedTextField.tintColor = UIColor(red: 0.25, green: 0.55, blue: 1.00, alpha: 1)
         innerFloatedTextField.floatingPlaceholderFont = UIFont.systemFont(ofSize: 14)
         innerFloatedTextField.floatingPlaceholderColor = UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1)
         innerFloatedTextField.floatingPlaceholderActiveColor = UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1)
         innerFloatedTextField.borderColorDefault = UIColor.clear
         innerFloatedTextField.borderColorActive = UIColor(red: 0.25, green: 0.55, blue: 1.00, alpha: 1)
-        innerFloatedTextField.borderWidthInactive = 0
-        innerFloatedTextField.borderWidthActive = 1
+        innerFloatedTextField.borderWidthInactive = 1
+        innerFloatedTextField.borderWidthActive = 2
         innerFloatedTextField.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         innerFloatedTextField.keyboardAppearance = .dark
         innerFloatedTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -110,7 +112,7 @@ final class ViewController: UIViewController {
             innerFloatedTextField.topAnchor.constraint(equalTo: errorButton.bottomAnchor, constant: 24),
             innerFloatedTextField.leadingAnchor.constraint(equalTo: amountTextField.leadingAnchor),
             innerFloatedTextField.trailingAnchor.constraint(equalTo: amountTextField.trailingAnchor),
-            innerFloatedTextField.heightAnchor.constraint(equalToConstant: 62)
+            innerFloatedTextField.heightAnchor.constraint(equalToConstant: 55)
         ])
 	}
 

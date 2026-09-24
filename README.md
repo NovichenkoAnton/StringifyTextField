@@ -126,18 +126,25 @@ stringifyTextField.floatingPlaceholderActiveColor = UIColor.blue
 
 ### Inner floated text field
 
-`InnerFloatedStringifyTextField` is a `StringifyTextField` subclass with a persistent floated label inside the field bounds. The label stays at the top even when the field is empty. The standard clear button remains vertically centered, and the value is clipped to that button with a trailing ellipsis.
+`InnerFloatedStringifyTextField` is a `StringifyTextField` subclass with an inner floated label. The standard clear button remains vertically centered, and the value is clipped to that button with a trailing ellipsis.
 
 ```swift
 let innerFloatedTextField = InnerFloatedStringifyTextField(type: .amount)
 innerFloatedTextField.placeholder = "Amount, BYN"
 innerFloatedTextField.clearButtonMode = .whileEditing
-innerFloatedTextField.floatingPlaceholderFont = UIFont.systemFont(ofSize: 14)
+innerFloatedTextField.floatedLabelFontSize = 14
 innerFloatedTextField.floatingPlaceholderColor = UIColor.gray
 innerFloatedTextField.floatingPlaceholderActiveColor = UIColor.gray
 ```
 
-You can adjust inner spacing if needed:
+The label can stay at the top or float up only after a value is entered:
+
+```swift
+innerFloatedTextField.floatedPlaceholderDisplay = .alwaysOnTop
+innerFloatedTextField.floatedPlaceholderDisplay = .onInput
+```
+
+`contentInsets` insets the label, the value, and the clear button inside the field bounds. Top inset places the floated label, bottom inset places the value.
 
 ```swift
 innerFloatedTextField.contentInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
