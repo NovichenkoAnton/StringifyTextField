@@ -236,7 +236,7 @@ open class StringifyTextField: UITextField {
     @IBInspectable public var floatingPlaceholderColor: UIColor = UIColor.black {
         didSet {
             if floatingPlaceholder {
-                floatedLabel.textColor = floatingPlaceholderColor
+                applyFloatedLabelColor(floatingPlaceholderColor)
                 setNeedsDisplay()
             }
         }
@@ -251,10 +251,12 @@ open class StringifyTextField: UITextField {
     @IBInspectable public var floatingPadding: CGFloat = 0
     
     /// Font for the floating placeholder.
+    /// When `attributedPlaceholder` contains font attributes, each run keeps its typeface
+    /// and is scaled so the largest font matches this font's point size.
     /// Default value is `UIFont.systemFont(ofSize: 14)`.
     public var floatingPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14) {
         didSet {
-            floatedLabel.font = floatingPlaceholderFont
+            syncFloatedLabelText()
             if floatingPlaceholder {
                 setNeedsLayout()
             }
@@ -397,13 +399,13 @@ open class StringifyTextField: UITextField {
     
     open override var placeholder: String? {
         didSet {
-            floatedLabel.text = placeholder
+            syncFloatedLabelText()
         }
     }
     
     open override var attributedPlaceholder: NSAttributedString? {
         didSet {
-            floatedLabel.text = attributedPlaceholder?.string
+            syncFloatedLabelText()
         }
     }
     
@@ -515,15 +517,9 @@ open class StringifyTextField: UITextField {
         borderStyle = .none
         
         floatedLabel.alpha = 1
-        floatedLabel.textColor = UIColor.black
-        floatedLabel.font = floatingPlaceholderFont
-        if let attributedPlaceholder = self.attributedPlaceholder {
-            floatedLabel.text = attributedPlaceholder.string
-        } else {
-            floatedLabel.text = self.placeholder
-        }
         floatedLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         floatedLabel.textAlignment = self.textAlignment
+        syncFloatedLabelText()
         
         addSubview(floatedLabel)
         bringSubviewToFront(floatedLabel)
@@ -1026,7 +1022,7 @@ private extension StringifyTextField {
         
         self.text = possibleText
         
-        let newCursorPosition = range.location + string.count
+        let newCursorPosition = range.location + (string as NSString).length
         
         if let newPosition = self.position(from: self.beginningOfDocument, offset: newCursorPosition) {
             self.selectedTextRange = self.textRange(from: newPosition, to: newPosition)
@@ -1298,7 +1294,38 @@ private extension StringifyTextField {
     /// Floating label height adjustment.
     /// - Returns: Adjusted height
     func floatedLabelHeight() -> CGFloat {
-        floatingPlaceholderFont.lineHeight + 4.0
+        let fallbackLineHeight = floatingPlaceholderFont.lineHeight
+        guard let attributedText = floatedLabel.attributedText, attributedText.length > 0 else {
+            return fallbackLineHeight + 4.0
+        }
+
+        return maximumFontLineHeight(in: attributedText, fallback: floatingPlaceholderFont) + 4.0
+    }
+
+    func syncFloatedLabelText() {
+        let color = floatedLabelColor(isActive: hasText && isFirstResponder)
+
+        if let attributedPlaceholder, attributedPlaceholder.length > 0 {
+            floatedLabel.attributedText = attributedStringForFloatedLabel(
+                attributedPlaceholder,
+                fitting: floatingPlaceholderFont.pointSize,
+                fallbackFont: floatingPlaceholderFont,
+                color: color
+            )
+        } else {
+            floatedLabel.attributedText = nil
+            floatedLabel.font = floatingPlaceholderFont
+            floatedLabel.textColor = color
+            floatedLabel.text = placeholder
+        }
+    }
+
+    func floatedLabelColor(isActive: Bool) -> UIColor {
+        isActive ? floatingPlaceholderActiveColor : floatingPlaceholderColor
+    }
+
+    func applyFloatedLabelColor(_ color: UIColor) {
+        setFloatedLabelForegroundColor(color, of: floatedLabel)
     }
     
     func updateFloatedLabel(animated: Bool = false) {
@@ -1341,12 +1368,9 @@ private extension StringifyTextField {
     /// Update text color of the floating label.
     /// - Parameter editing: `true` if `UITextField` is being edited
     func updateFloatedLabelColor(editing: Bool, animated: Bool) {
+        let color = floatedLabelColor(isActive: editing && hasText)
         let animationBlock = { () -> Void in
-            if editing && self.hasText {
-                self.floatedLabel.textColor = self.floatingPlaceholderActiveColor
-            } else {
-                self.floatedLabel.textColor = self.floatingPlaceholderColor
-            }
+            self.applyFloatedLabelColor(color)
         }
         
         if animated {

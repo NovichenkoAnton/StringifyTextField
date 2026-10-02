@@ -10,6 +10,7 @@
 		1A98CC0A253DCEE80056633D /* Pods_StringifyTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */; };
 		1A98CC0B253DCEE80056633D /* Pods_StringifyTextField.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1AF4C1102E8A910000AABB01 /* InnerFloatedStringifyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF4C1112E8A910000AABB01 /* InnerFloatedStringifyTextField.swift */; };
+		1AF4C1122E8A910000AABB02 /* FloatedLabelText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF4C1132E8A910000AABB02 /* FloatedLabelText.swift */; };
 		1AE16A5D265795C8007812ED /* Extendy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AE16A5C265795C8007812ED /* Extendy.framework */; };
 		1AE9D6D0243F96D4005D66A5 /* StringifyTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AE9D6CE243F96D4005D66A5 /* StringifyTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1AE9D6D3243F96E0005D66A5 /* StringifyTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE9D6D2243F96E0005D66A5 /* StringifyTextField.swift */; };
@@ -32,6 +33,7 @@
 /* Begin PBXFileReference section */
 		1A98CC09253DCEE80056633D /* Pods_StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF4C1112E8A910000AABB01 /* InnerFloatedStringifyTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InnerFloatedStringifyTextField.swift; sourceTree = "<group>"; };
+		1AF4C1132E8A910000AABB02 /* FloatedLabelText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatedLabelText.swift; sourceTree = "<group>"; };
 		1AE16A5C265795C8007812ED /* Extendy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Extendy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE9D6C2243F95B4005D66A5 /* StringifyTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StringifyTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE9D6CE243F96D4005D66A5 /* StringifyTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringifyTextField.h; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				1AF4C1112E8A910000AABB01 /* InnerFloatedStringifyTextField.swift */,
+				1AF4C1132E8A910000AABB02 /* FloatedLabelText.swift */,
 				1AE9D6D2243F96E0005D66A5 /* StringifyTextField.swift */,
 				1AE9D6CE243F96D4005D66A5 /* StringifyTextField.h */,
 				1AE9D6CF243F96D4005D66A5 /* Info.plist */,
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AF4C1102E8A910000AABB01 /* InnerFloatedStringifyTextField.swift in Sources */,
+				1AF4C1122E8A910000AABB02 /* FloatedLabelText.swift in Sources */,
 				1AE9D6D3243F96E0005D66A5 /* StringifyTextField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

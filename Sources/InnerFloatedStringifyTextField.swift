@@ -107,13 +107,15 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
 
     open override var placeholder: String? {
         didSet {
-            innerFloatedLabel.text = placeholder
+            syncInnerFloatedLabel()
         }
     }
 
     open override var attributedPlaceholder: NSAttributedString? {
         didSet {
-            innerFloatedLabel.text = attributedPlaceholder?.string ?? placeholder
+            syncInnerFloatedLabel()
+            invalidateIntrinsicContentSize()
+            setNeedsLayout()
         }
     }
 
@@ -131,7 +133,7 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
     }
 
     open override var intrinsicContentSize: CGSize {
-        let labelHeight = ceil(floatedLabelFont.lineHeight)
+        let labelHeight = ceil(floatedContentLineHeight)
         let textHeight = ceil(valueFont.lineHeight)
         let height = contentInsets.top + labelHeight + labelToTextSpacing + textHeight + contentInsets.bottom
 
@@ -166,12 +168,10 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
 
         let floated = isFloatedLabelAtTop
         let targetFrame = floated ? floatedLabelRect(forBounds: bounds) : restingValueRect(forBounds: bounds)
-        let targetFont = floated ? floatedLabelFont : valueFont
         let isInitialLayout = innerFloatedLabel.frame == .zero
         let shouldAnimate = !isInitialLayout && isLabelFloated != floated && !isAnimatingFloatedLabel
 
-        innerFloatedLabel.text = attributedPlaceholder?.string ?? placeholder
-        updateInnerFloatedLabelColor(animated: false)
+        applyInnerFloatedLabelText(floated: floated)
 
         if shouldAnimate {
             isLabelFloated = floated
@@ -183,7 +183,6 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
                 options: [.curveEaseOut, .beginFromCurrentState],
                 animations: {
                     self.innerFloatedLabel.frame = targetFrame
-                    self.innerFloatedLabel.font = targetFont
                 },
                 completion: { _ in
                     self.isAnimatingFloatedLabel = false
@@ -191,7 +190,6 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
             )
         } else if !isAnimatingFloatedLabel {
             innerFloatedLabel.frame = targetFrame
-            innerFloatedLabel.font = targetFont
             isLabelFloated = floated
         }
 
@@ -246,8 +244,6 @@ private extension InnerFloatedStringifyTextField {
     func setup() {
         applyInnerFloatedConfiguration()
 
-        innerFloatedLabel.font = floatedLabelFont
-        innerFloatedLabel.textColor = floatingPlaceholderColor
         innerFloatedLabel.textAlignment = textAlignment
         syncInnerFloatedLabel()
 
@@ -268,7 +264,54 @@ private extension InnerFloatedStringifyTextField {
     }
 
     func syncInnerFloatedLabel() {
-        innerFloatedLabel.text = attributedPlaceholder?.string ?? placeholder
+        applyInnerFloatedLabelText(floated: isFloatedLabelAtTop)
+    }
+
+    func applyInnerFloatedLabelText(floated: Bool) {
+        let color = usesActiveFloatedLabelColor ? floatingPlaceholderActiveColor : floatingPlaceholderColor
+
+        if let attributedPlaceholder, attributedPlaceholder.length > 0 {
+            innerFloatedLabel.attributedText = attributedStringForFloatedLabel(
+                attributedPlaceholder,
+                fitting: floated ? floatedLabelFont.pointSize : nil,
+                fallbackFont: floated ? floatedLabelFont : valueFont,
+                color: color
+            )
+            return
+        }
+
+        innerFloatedLabel.attributedText = nil
+        innerFloatedLabel.font = floated ? floatedLabelFont : valueFont
+        innerFloatedLabel.textColor = color
+        innerFloatedLabel.text = placeholder
+    }
+
+    var floatedContentLineHeight: CGFloat {
+        guard let attributedPlaceholder, attributedPlaceholder.length > 0 else {
+            return floatedLabelFont.lineHeight
+        }
+
+        let styled = attributedStringForFloatedLabel(
+            attributedPlaceholder,
+            fitting: floatedLabelFont.pointSize,
+            fallbackFont: floatedLabelFont,
+            color: floatingPlaceholderColor
+        )
+        return maximumFontLineHeight(in: styled, fallback: floatedLabelFont)
+    }
+
+    var restingContentLineHeight: CGFloat {
+        guard let attributedPlaceholder, attributedPlaceholder.length > 0 else {
+            return valueFont.lineHeight
+        }
+
+        let styled = attributedStringForFloatedLabel(
+            attributedPlaceholder,
+            fitting: nil,
+            fallbackFont: valueFont,
+            color: floatingPlaceholderColor
+        )
+        return maximumFontLineHeight(in: styled, fallback: valueFont)
     }
 
     func floatedLabelRect(forBounds bounds: CGRect) -> CGRect {
@@ -278,12 +321,12 @@ private extension InnerFloatedStringifyTextField {
             x: contentInsets.left,
             y: contentInsets.top,
             width: max(0, rightEdge - contentInsets.left),
-            height: ceil(floatedLabelFont.lineHeight)
+            height: ceil(floatedContentLineHeight)
         )
     }
 
     func restingValueRect(forBounds bounds: CGRect) -> CGRect {
-        let textHeight = ceil(valueFont.lineHeight)
+        let textHeight = ceil(restingContentLineHeight)
         let topLimit = contentInsets.top
         let bottomLimit = max(topLimit + textHeight, bounds.height - contentInsets.bottom)
         let availableHeight = bottomLimit - topLimit
@@ -333,7 +376,7 @@ private extension InnerFloatedStringifyTextField {
     var usesActiveFloatedLabelColor: Bool {
         switch floatedPlaceholderDisplay {
         case .onInput:
-            return isFloatedLabelAtTop
+            return isFloatedLabelAtTop && isFirstResponder
         case .alwaysOnTop:
             return isFirstResponder
         }
@@ -342,7 +385,7 @@ private extension InnerFloatedStringifyTextField {
     func updateInnerFloatedLabelColor(animated: Bool) {
         let color = usesActiveFloatedLabelColor ? floatingPlaceholderActiveColor : floatingPlaceholderColor
         let animationBlock = {
-            self.innerFloatedLabel.textColor = color
+            setFloatedLabelForegroundColor(color, of: self.innerFloatedLabel)
         }
 
         if animated {

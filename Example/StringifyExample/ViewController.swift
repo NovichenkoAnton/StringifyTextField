@@ -57,7 +57,15 @@ final class ViewController: UIViewController {
         let innerFloatedTextField = InnerFloatedStringifyTextField(type: .amount, cornerRadius: 10)
         innerFloatedTextField.contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         innerFloatedTextField.stDelegate = self
-        innerFloatedTextField.placeholder = "Amount"
+        let placeholder = NSMutableAttributedString(
+            string: "Amount ",
+            attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .regular)]
+        )
+        placeholder.append(NSAttributedString(
+            string: "USD",
+            attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)]
+        ))
+        innerFloatedTextField.attributedPlaceholder = placeholder
         innerFloatedTextField.floatedPlaceholderDisplay = .onInput
         innerFloatedTextField.trailingImage = UIImage(named: "image")
         innerFloatedTextField.font = UIFont.systemFont(ofSize: 17)
