@@ -414,6 +414,7 @@ open class StringifyTextField: UITextField {
             if floatingPlaceholder {
                 floatedLabel.textAlignment = textAlignment
             }
+            setNeedsLayout()
         }
     }
     
@@ -695,6 +696,16 @@ open class StringifyTextField: UITextField {
     private func paddedTextRect(from original: CGRect, bounds: CGRect) -> CGRect {
         var rect = original
         let inset = horizontalInset(for: style)
+
+        if textAlignment == .center, inset > 0 {
+            let rightEdge = textRightEdge(forBounds: bounds)
+            return CGRect(
+                x: 0,
+                y: original.origin.y,
+                width: max(0, rightEdge),
+                height: original.size.height
+            )
+        }
         
         if inset > 0 {
             rect.origin.x += inset
@@ -728,6 +739,15 @@ open class StringifyTextField: UITextField {
         if isClearButtonVisible {
             return clearButtonRect(forBounds: bounds).minX
         }
+
+        if trailingImage != nil {
+            return rightViewRect(forBounds: bounds).minX
+        }
+
+        if textAlignment == .center, horizontalInset(for: style) > 0 {
+            return bounds.width
+        }
+
         return rightAccessoryEdge(forBounds: bounds)
     }
     

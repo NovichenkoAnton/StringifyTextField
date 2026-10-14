@@ -122,6 +122,7 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
     open override var textAlignment: NSTextAlignment {
         didSet {
             innerFloatedLabel.textAlignment = textAlignment
+            setNeedsLayout()
         }
     }
 
@@ -241,6 +242,12 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
 // MARK: - Private API
 
 private extension InnerFloatedStringifyTextField {
+    /// Centered text and the floated label use the full width. Side `contentInsets` stay
+    /// for the clear button so a square field can show the glyph in the middle.
+    var textContentLeftInset: CGFloat {
+        textAlignment == .center ? 0 : contentInsets.left
+    }
+    
     func setup() {
         applyInnerFloatedConfiguration()
 
@@ -315,12 +322,13 @@ private extension InnerFloatedStringifyTextField {
     }
 
     func floatedLabelRect(forBounds bounds: CGRect) -> CGRect {
+        let leftInset = textContentLeftInset
         let rightEdge = contentRightEdge(forBounds: bounds)
 
         return CGRect(
-            x: contentInsets.left,
+            x: leftInset,
             y: contentInsets.top,
-            width: max(0, rightEdge - contentInsets.left),
+            width: max(0, rightEdge - leftInset),
             height: ceil(floatedContentLineHeight)
         )
     }
@@ -331,12 +339,13 @@ private extension InnerFloatedStringifyTextField {
         let bottomLimit = max(topLimit + textHeight, bounds.height - contentInsets.bottom)
         let availableHeight = bottomLimit - topLimit
         let yPosition = topLimit + max(0, (availableHeight - textHeight) / 2)
+        let leftInset = textContentLeftInset
         let rightEdge = contentRightEdge(forBounds: bounds)
 
         return CGRect(
-            x: contentInsets.left,
+            x: leftInset,
             y: yPosition,
-            width: max(0, rightEdge - contentInsets.left),
+            width: max(0, rightEdge - leftInset),
             height: textHeight
         )
     }
@@ -351,12 +360,13 @@ private extension InnerFloatedStringifyTextField {
         let slotBottom = max(slotTop + textHeight, bounds.height - contentInsets.bottom)
         let slotHeight = slotBottom - slotTop
         let yPosition = slotTop + max(0, (slotHeight - textHeight) / 2)
+        let leftInset = textContentLeftInset
         let rightEdge = contentRightEdge(forBounds: bounds)
 
         return CGRect(
-            x: contentInsets.left,
+            x: leftInset,
             y: yPosition,
-            width: max(0, rightEdge - contentInsets.left),
+            width: max(0, rightEdge - leftInset),
             height: max(textHeight, slotBottom - yPosition)
         )
     }
@@ -368,6 +378,10 @@ private extension InnerFloatedStringifyTextField {
 
         if trailingImage != nil {
             return rightViewRect(forBounds: bounds).minX
+        }
+
+        if textAlignment == .center {
+            return bounds.width
         }
 
         return bounds.width - contentInsets.right
