@@ -109,8 +109,8 @@ final class ViewController: UIViewController {
 			segmentedControl.selectedSegmentIndex = 3
 		case .cvv:
 			segmentedControl.selectedSegmentIndex = 4
-		default:
-			break
+        case .none:
+            segmentedControl.selectedSegmentIndex = 5
 		}
 
 		decimalSwitcher.isOn = stringifyTextField.decimal
@@ -139,13 +139,14 @@ final class ViewController: UIViewController {
 			stringifyTextField.textType = .expDate
 		} else if sender.selectedSegmentIndex == 4 {
 			stringifyTextField.textType = .cvv
-		}
+        } else if sender.selectedSegmentIndex == 5 {
+            stringifyTextField.textType = .none
+        }
 	}
 
 	@IBAction func getTextFieldValue(_ sender: Any) {
 		valueLabel.text = "Textfield value is:\n\(stringifyTextField.plainValue)"
 	}
-
 
 	@IBAction func copyCardNumber(_ sender: Any) {
 		UIPasteboard.general.string = "1234567890123456"

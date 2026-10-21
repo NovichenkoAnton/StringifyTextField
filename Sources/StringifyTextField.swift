@@ -367,6 +367,8 @@ open class StringifyTextField: UITextField {
     
     private var isShowingError = false
     private var errorWorkItem: DispatchWorkItem?
+    private var isAdjustingCursor = false
+    private var cursorAdjustmentID = 0
     
     // MARK: - Public properties
     
@@ -919,17 +921,14 @@ private extension StringifyTextField {
             return false
         }
         
-        let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
-        
+        let caretOffset = range.location + (string as NSString).length
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
         if possibleText.count <= maxLength {
             self.text = possibleText.replacingOccurrences(of: " ", with: "").separate(every: 4, with: " ")
         }
         
-        if let location = cursorLocation {
-            selectedTextRange = textRange(from: location, to: location)
-        }
+        moveCursor(to: caretOffset)
         
         if possibleText.count == maxLength {
             stDelegate?.didFilled?(self)
@@ -954,8 +953,7 @@ private extension StringifyTextField {
             return false
         }
         
-        let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
-        
+        let caretOffset = range.location + (string as NSString).length
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
         if possibleText.count == 2 {
@@ -964,9 +962,7 @@ private extension StringifyTextField {
             self.text = possibleText.replacingOccurrences(of: "/", with: "").separate(every: 2, with: "/")
         }
         
-        if let location = cursorLocation {
-            selectedTextRange = textRange(from: location, to: location)
-        }
+        moveCursor(to: caretOffset)
         
         if possibleText.count == 5 {
             stDelegate?.didFilled?(self)
@@ -991,17 +987,14 @@ private extension StringifyTextField {
             return false
         }
         
-        let cursorLocation = position(from: beginningOfDocument, offset: (range.location + NSString(string: string).length))
-        
+        let caretOffset = range.location + (string as NSString).length
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
         if possibleText.count <= 3 {
             self.text = possibleText
         }
         
-        if let location = cursorLocation {
-            selectedTextRange = textRange(from: location, to: location)
-        }
+        moveCursor(to: caretOffset)
         
         if possibleText.count == 3 {
             stDelegate?.didFilled?(self)
@@ -1018,12 +1011,7 @@ private extension StringifyTextField {
         if string.isEmpty {
             let newText = (text as NSString).replacingCharacters(in: range, with: string)
             self.text = newText
-            
-            let newCursorPosition = range.location
-            if let newPosition = self.position(from: self.beginningOfDocument, offset: newCursorPosition) {
-                self.selectedTextRange = self.textRange(from: newPosition, to: newPosition)
-            }
-            
+            moveCursor(to: range.location)
             return false
         }
         
@@ -1034,19 +1022,14 @@ private extension StringifyTextField {
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
         if possibleText.count > maxLength {
-            if let currentSelectedRange = self.selectedTextRange {
-                self.selectedTextRange = currentSelectedRange
+            if let selectedTextRange {
+                updateCursor(selectedTextRange)
             }
             return false
         }
         
         self.text = possibleText
-        
-        let newCursorPosition = range.location + (string as NSString).length
-        
-        if let newPosition = self.position(from: self.beginningOfDocument, offset: newCursorPosition) {
-            self.selectedTextRange = self.textRange(from: newPosition, to: newPosition)
-        }
+        moveCursor(to: range.location + (string as NSString).length)
         
         if possibleText.count == maxLength {
             stDelegate?.didFilled?(self)
@@ -1401,9 +1384,101 @@ private extension StringifyTextField {
     }
 }
 
+// MARK: - Private extension (cursor)
+
+private extension StringifyTextField {
+    /// Places the caret at a UTF-16 offset of the current text.
+    /// The offset is resolved after the text is updated, so the position stays inside the new document.
+    func moveCursor(to offset: Int) {
+        let length = (text as NSString?)?.length ?? 0
+        let clampedOffset = min(max(offset, 0), length)
+        guard let position = position(from: beginningOfDocument, offset: clampedOffset),
+              let range = textRange(from: position, to: position) else { return }
+        updateCursor(range)
+    }
+
+    /// UIKit enables Shift when `selectedTextRange` changes.
+    /// The next typed character then becomes uppercase, including after a caret move in the middle of a word.
+    /// Autocapitalization is suspended for that assignment unless the caret is at a position that should stay capitalized.
+    func updateCursor(_ range: UITextRange) {
+        let suppressShift = shouldSuppressAutocapitalization(for: range)
+        let autocapitalization = autocapitalizationType
+
+        isAdjustingCursor = true
+        if suppressShift {
+            autocapitalizationType = .none
+        }
+        selectedTextRange = range
+        if suppressShift {
+            autocapitalizationType = autocapitalization
+        }
+        isAdjustingCursor = false
+    }
+
+    func shouldSuppressAutocapitalization(for range: UITextRange) -> Bool {
+        switch autocapitalizationType {
+        case .sentences, .words:
+            guard markedTextRange == nil else { return false }
+            let caretOffset = offset(from: beginningOfDocument, to: range.start)
+            return !shouldAutocapitalize(at: caretOffset)
+        default:
+            return false
+        }
+    }
+
+    func shouldAutocapitalize(at caretOffset: Int) -> Bool {
+        guard caretOffset > 0, let text, !text.isEmpty else { return true }
+
+        let nsText = text as NSString
+        guard caretOffset <= nsText.length else { return false }
+
+        let prefix = nsText.substring(to: caretOffset)
+        guard let last = prefix.last else { return true }
+
+        switch autocapitalizationType {
+        case .words:
+            return last.isWhitespace || last.isNewline
+        case .sentences:
+            if last.isNewline { return true }
+            guard last.isWhitespace else { return false }
+
+            let trimmed = prefix.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let terminator = trimmed.last else { return true }
+            return ".!?…".contains(terminator)
+        default:
+            return false
+        }
+    }
+
+    func suppressAutocapitalizationForCurrentCaret() {
+        guard !isAdjustingCursor, markedTextRange == nil else { return }
+        guard let selectedTextRange, shouldSuppressAutocapitalization(for: selectedTextRange) else { return }
+
+        let autocapitalization = autocapitalizationType
+        isAdjustingCursor = true
+        autocapitalizationType = .none
+        self.selectedTextRange = selectedTextRange
+        autocapitalizationType = autocapitalization
+        isAdjustingCursor = false
+    }
+}
+
 // MARK: - UITextFieldDelegate
 
 extension StringifyTextField: UITextFieldDelegate {
+    @available(iOS 13.0, *)
+    open func textFieldDidChangeSelection(_ textField: UITextField) {
+        guard !isAdjustingCursor else { return }
+        guard let selectedTextRange, shouldSuppressAutocapitalization(for: selectedTextRange) else { return }
+
+        cursorAdjustmentID += 1
+        let adjustmentID = cursorAdjustmentID
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.cursorAdjustmentID == adjustmentID else { return }
+            self.suppressAutocapitalizationForCurrentCaret()
+        }
+    }
+
     open func textFieldDidBeginEditing(_ textField: UITextField) {
         if case .line = style {
             activateBottomLine()
