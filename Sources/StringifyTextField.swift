@@ -76,6 +76,57 @@ open class StringifyTextField: UITextField {
         case amount = 0, creditCard, IBAN, expDate, cvv, none
     }
     
+    /// An action from the text field edit menu.
+    public struct EditingAction: OptionSet {
+        public let rawValue: UInt
+        
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+        
+        /// Cut the selected text.
+        public static let cut = EditingAction(rawValue: 1 << 0)
+        /// Copy the selected text.
+        public static let copy = EditingAction(rawValue: 1 << 1)
+        /// Paste from the pasteboard.
+        public static let paste = EditingAction(rawValue: 1 << 2)
+        /// Select the word nearest to the insertion point.
+        public static let select = EditingAction(rawValue: 1 << 3)
+        /// Select all text.
+        public static let selectAll = EditingAction(rawValue: 1 << 4)
+        /// Delete the selected text.
+        public static let delete = EditingAction(rawValue: 1 << 5)
+        /// Paste and match the current style. Available on iOS 15 and later.
+        public static let pasteAndMatchStyle = EditingAction(rawValue: 1 << 6)
+        /// Paste and open the pasted content. Available on iOS 15 and later.
+        public static let pasteAndGo = EditingAction(rawValue: 1 << 7)
+        /// Paste and search for the pasted content. Available on iOS 15 and later.
+        public static let pasteAndSearch = EditingAction(rawValue: 1 << 8)
+        /// Capture text from the camera. Available on iOS 15 and later.
+        public static let captureTextFromCamera = EditingAction(rawValue: 1 << 9)
+        /// Show system writing tools. Available on iOS 18.2 and later.
+        public static let showWritingTools = EditingAction(rawValue: 1 << 10)
+        
+        /// Every action represented by this set.
+        public static let all: EditingAction = [
+            .cut, .copy, .paste, .select, .selectAll, .delete,
+            .pasteAndMatchStyle, .pasteAndGo, .pasteAndSearch,
+            .captureTextFromCamera, .showWritingTools
+        ]
+    }
+    
+    /// Which edit-menu actions `StringifyTextField` offers.
+    public enum EditingActions {
+        /// Every action the system offers.
+        case all
+        /// No edit-menu actions.
+        case none
+        /// Every system action except the given ones. Actions that are not listed here stay available.
+        case excluding(EditingAction)
+        /// Only the given actions. Any other system action is hidden.
+        case only(EditingAction)
+    }
+    
     // MARK: - IBInspectable
     
     @available(*, unavailable, message: "This property is reserved for Interface Builder. Use 'textType' instead.")
@@ -369,6 +420,7 @@ open class StringifyTextField: UITextField {
     private var errorWorkItem: DispatchWorkItem?
     private var isAdjustingCursor = false
     private var cursorAdjustmentID = 0
+    private var isEditingActionsCustomized = false
     
     // MARK: - Public properties
     
@@ -396,6 +448,18 @@ open class StringifyTextField: UITextField {
     
     /// Regular expression used to validate `.none` text type.
     public var pattern: String.RegExpPattern?
+    
+    /// Actions available in the edit menu.
+    /// Default value is `.all`.
+    ///
+    /// Disable actions with `.excluding`, or leave only specific ones with `.only`.
+    /// `.amount` and `.expDate` hide Cut and Paste until this property is set.
+    /// Setting it, including back to `.all`, replaces that restriction.
+    public var editingActions: EditingActions = .all {
+        didSet {
+            isEditingActionsCustomized = true
+        }
+    }
     
     // MARK: - Overridden properties
     
@@ -617,18 +681,13 @@ open class StringifyTextField: UITextField {
     }
     
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        switch textType {
-        case .amount, .expDate:
-            if action == #selector(paste(_:)) || action == #selector(cut(_:)) {
-                return false
-            }
-            return super.canPerformAction(action, withSender: sender)
-        default:
-            return super.canPerformAction(action, withSender: sender)
-        }
+        guard allowsEditingAction(action) else { return false }
+        
+        return super.canPerformAction(action, withSender: sender)
     }
     
     open override func paste(_ sender: Any?) {
+        guard allowsEditingAction(#selector(paste(_:))) else { return }
         guard UIPasteboard.general.hasStrings, var pastedString = UIPasteboard.general.string else {
             return
         }
@@ -812,6 +871,78 @@ open class StringifyTextField: UITextField {
         
         hideErrorLabel()
         animateToNormalState()
+    }
+}
+
+// MARK: - Edit menu
+
+private extension StringifyTextField {
+    func allowsEditingAction(_ action: Selector) -> Bool {
+        switch editingActions {
+        case .all:
+            guard !isEditingActionsCustomized else { return true }
+            guard let editingAction = editingAction(for: action) else { return true }
+            return !defaultRestrictedEditingActions.contains(editingAction)
+        case .none:
+            return false
+        case .excluding(let excluded):
+            guard let editingAction = editingAction(for: action) else { return true }
+            return !excluded.contains(editingAction)
+        case .only(let allowed):
+            guard let editingAction = editingAction(for: action) else { return false }
+            return allowed.contains(editingAction)
+        }
+    }
+    
+    var defaultRestrictedEditingActions: EditingAction {
+        switch textType {
+        case .amount, .expDate:
+            return [.cut, .paste]
+        default:
+            return []
+        }
+    }
+    
+    func editingAction(for action: Selector) -> EditingAction? {
+        switch action {
+        case #selector(cut(_:)):
+            return .cut
+        case #selector(copy(_:)):
+            return .copy
+        case #selector(paste(_:)):
+            return .paste
+        case #selector(select(_:)):
+            return .select
+        case #selector(selectAll(_:)):
+            return .selectAll
+        case #selector(delete(_:)):
+            return .delete
+        default:
+            break
+        }
+        
+        guard #available(iOS 15.0, *) else { return nil }
+        
+        switch action {
+        case #selector(pasteAndMatchStyle(_:)):
+            return .pasteAndMatchStyle
+        case #selector(pasteAndGo(_:)):
+            return .pasteAndGo
+        case #selector(pasteAndSearch(_:)):
+            return .pasteAndSearch
+        case #selector(captureTextFromCamera(_:)):
+            return .captureTextFromCamera
+        default:
+            break
+        }
+        
+        guard #available(iOS 18.2, *) else { return nil }
+        
+        if action == #selector(showWritingTools(_:)) {
+            return .showWritingTools
+        }
+        
+        return nil
     }
 }
 

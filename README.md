@@ -86,6 +86,28 @@ You can get the plain value from `StringifyTextField`. For example, for `.expDat
 let expDate = stringifyTextField.plainValue
 ```
 
+### Edit menu
+
+Every system edit action is available by default. `.amount` and `.expDate` hide Cut and Paste until `editingActions` is set. Setting the property, including back to `.all`, replaces that restriction.
+
+Disable actions:
+
+```swift
+stringifyTextField.editingActions = .excluding([.cut, .paste])
+```
+
+Leave only specific actions:
+
+```swift
+stringifyTextField.editingActions = .only([.copy, .selectAll])
+```
+
+Hide the menu:
+
+```swift
+stringifyTextField.editingActions = .none
+```
+
 ### Styles & floating placeholder
 
 `StringifyTextField` supports three different styles:

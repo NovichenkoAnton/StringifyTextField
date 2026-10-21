@@ -21,6 +21,7 @@ final class ViewController: UIViewController {
 	@IBOutlet var currencyTextField: UITextField!
 	@IBOutlet var dateFormatTextField: UITextField!
 	@IBOutlet var segmentedControl: UISegmentedControl!
+	@IBOutlet var editingActionsControl: UISegmentedControl!
 	@IBOutlet var decimalSwitcher: UISwitch!
 	@IBOutlet var amountTextField: StringifyTextField! {
 		didSet {
@@ -85,16 +86,118 @@ final class ViewController: UIViewController {
     }()
 
     @IBOutlet var errorButton: UIButton!
+	@IBOutlet var scrollView: UIScrollView!
+	@IBOutlet var contentView: UIView!
+
+	private var keyboardOverlap: CGFloat = 0
+	private var keyboardFrameObserver: NSObjectProtocol?
+
     // MARK: - Lifecycle
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
+		configureKeyboardAvoidance()
 		configureUI()
+	}
+
+	deinit {
+		if let keyboardFrameObserver {
+			NotificationCenter.default.removeObserver(keyboardFrameObserver)
+		}
 	}
 
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		view.endEditing(true)
+	}
+
+	private func configureKeyboardAvoidance() {
+		let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+		tap.cancelsTouchesInView = false
+		tap.delegate = self
+		scrollView.addGestureRecognizer(tap)
+
+		keyboardFrameObserver = NotificationCenter.default.addObserver(
+			forName: UIResponder.keyboardWillChangeFrameNotification,
+			object: nil,
+			queue: .main
+		) { [weak self] notification in
+			self?.adjustScrollView(for: notification)
+		}
+	}
+
+	@objc private func dismissKeyboard() {
+		view.endEditing(true)
+	}
+
+	private func adjustScrollView(for notification: Notification) {
+		guard
+			let userInfo = notification.userInfo,
+			let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+			let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+			let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
+		else { return }
+
+		let keyboardInView = view.convert(endFrame, from: nil)
+		let overlap = max(0, scrollView.frame.maxY - keyboardInView.minY)
+		let previousOverlap = keyboardOverlap
+		keyboardOverlap = overlap
+
+		let options = UIView.AnimationOptions(rawValue: curveValue << 16).union(.beginFromCurrentState)
+		UIView.animate(withDuration: duration, delay: 0, options: options) {
+			var inset = self.scrollView.contentInset
+			inset.bottom = overlap
+			self.scrollView.contentInset = inset
+			self.scrollView.verticalScrollIndicatorInsets.bottom = overlap
+
+			if overlap > previousOverlap {
+				self.scrollActiveTextFieldAboveKeyboard(animated: false)
+			}
+		}
+	}
+
+	private func scrollActiveTextFieldAboveKeyboard(animated: Bool) {
+		guard keyboardOverlap > 0, let textField = activeTextField() else { return }
+
+		let padding: CGFloat = 16
+		let field = textField.convert(textField.bounds, to: scrollView).insetBy(dx: 0, dy: -padding)
+		let visibleHeight = scrollView.bounds.height - keyboardOverlap
+		guard visibleHeight > 0 else { return }
+
+		var offsetY = scrollView.contentOffset.y
+		let visibleTop = offsetY
+		let visibleBottom = offsetY + visibleHeight
+
+		if field.maxY > visibleBottom {
+			offsetY += field.maxY - visibleBottom
+		} else if field.minY < visibleTop {
+			offsetY -= visibleTop - field.minY
+		} else {
+			return
+		}
+
+		let minOffset = -scrollView.adjustedContentInset.top
+		let maxOffset = max(minOffset, scrollView.contentSize.height + keyboardOverlap - scrollView.bounds.height)
+		offsetY = min(max(offsetY, minOffset), maxOffset)
+
+		let offset = CGPoint(x: scrollView.contentOffset.x, y: offsetY)
+		if animated {
+			scrollView.setContentOffset(offset, animated: true)
+		} else {
+			scrollView.contentOffset = offset
+		}
+	}
+
+	private func activeTextField() -> UIView? {
+		func search(_ view: UIView) -> UIView? {
+			if view.isFirstResponder { return view }
+			for subview in view.subviews {
+				if let match = search(subview) { return match }
+			}
+			return nil
+		}
+
+		return search(view)
 	}
 
 	private func configureUI() {
@@ -114,17 +217,23 @@ final class ViewController: UIViewController {
 		}
 
 		decimalSwitcher.isOn = stringifyTextField.decimal
+		applyEditingActions()
 
-        view.addSubview(innerFloatedTextField)
+        contentView.addSubview(innerFloatedTextField)
         NSLayoutConstraint.activate([
             innerFloatedTextField.topAnchor.constraint(equalTo: errorButton.bottomAnchor, constant: 24),
             innerFloatedTextField.leadingAnchor.constraint(equalTo: amountTextField.leadingAnchor),
             innerFloatedTextField.trailingAnchor.constraint(equalTo: amountTextField.trailingAnchor),
-            innerFloatedTextField.heightAnchor.constraint(equalToConstant: 55)
+            innerFloatedTextField.heightAnchor.constraint(equalToConstant: 55),
+            innerFloatedTextField.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
 	}
 
 	// MARK: - Events
+	@IBAction func didChangeEditingActions(_ sender: UISegmentedControl) {
+		applyEditingActions()
+	}
+
 	@IBAction func didChangeSegment(_ sender: UISegmentedControl) {
 		stringifyTextField.text = ""
 		stringifyTextField.resignFirstResponder()
@@ -160,10 +269,32 @@ final class ViewController: UIViewController {
         amountTextField.showError()
         innerFloatedTextField.showError(message: "Error 2")
     }
+
+	private func applyEditingActions() {
+		let actions: StringifyTextField.EditingActions
+
+		switch editingActionsControl.selectedSegmentIndex {
+		case 1:
+			actions = .excluding([.cut, .paste])
+		case 2:
+			actions = .only([.copy, .select, .selectAll])
+		case 3:
+			actions = .none
+		default:
+			actions = .all
+		}
+
+		stringifyTextField.editingActions = actions
+		innerFloatedTextField.editingActions = actions
+	}
 }
 
 // MARK: - UITextFieldDelegate
 extension ViewController: UITextFieldDelegate {
+	func textFieldDidBeginEditing(_ textField: UITextField) {
+		scrollActiveTextFieldAboveKeyboard(animated: true)
+	}
+
 	func textFieldDidEndEditing(_ textField: UITextField) {
 		if textField == currencyTextField {
 			stringifyTextField.currencyMark = textField.text!.trim()
@@ -177,6 +308,7 @@ extension ViewController: UITextFieldDelegate {
 extension ViewController: StringifyTextFieldDelegate {
 	func didBeginEditing(_ textField: StringifyTextField) {
 		print("did begin editing \(textField.text!)")
+		scrollActiveTextFieldAboveKeyboard(animated: true)
 	}
 
 	func didEndEditing(_ textField: StringifyTextField) {
@@ -203,6 +335,17 @@ extension ViewController: StringifyTextFieldDelegate {
     func textFieldCleared(_ textField: StringifyTextField) {
         print("textField was cleared")
     }
+}
+
+extension ViewController: UIGestureRecognizerDelegate {
+	func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+		var touchedView = touch.view
+		while let view = touchedView {
+			if view is UIControl { return false }
+			touchedView = view.superview
+		}
+		return true
+	}
 }
 
 extension ViewController: StringifyTrailingActionDelegate {
