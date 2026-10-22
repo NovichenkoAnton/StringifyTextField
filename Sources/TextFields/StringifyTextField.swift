@@ -671,15 +671,6 @@ open class StringifyTextField: UITextField {
         super.removeFromSuperview()
     }
     
-    open override func closestPosition(to point: CGPoint) -> UITextPosition? {
-        switch textType {
-        case .amount:
-            return position(from: beginningOfDocument, offset: self.text?.count ?? 0)
-        default:
-            return super.closestPosition(to: point)
-        }
-    }
-    
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         guard allowsEditingAction(action) else { return false }
         
@@ -688,31 +679,13 @@ open class StringifyTextField: UITextField {
     
     open override func paste(_ sender: Any?) {
         guard allowsEditingAction(#selector(paste(_:))) else { return }
-        guard UIPasteboard.general.hasStrings, var pastedString = UIPasteboard.general.string else {
-            return
-        }
-        
-        pastedString = pastedString
-            .replacingOccurrences(of: " ", with: "")
-            .replacingOccurrences(of: "\u{00A0}", with: "")
         
         switch textType {
-        case .creditCard:
-            if pastedString.hasOnlyDigits(), pastedString.count <= 16 {
-                self.text = pastedString.separate(every: 4, with: " ")
-                
-                if pastedString.count == 16 {
-                    stDelegate?.didFilled?(self)
-                }
+        case .creditCard, .IBAN:
+            guard UIPasteboard.general.hasStrings, let pastedString = UIPasteboard.general.string else {
+                return
             }
-        case .IBAN:
-            if pastedString.count <= 34 {
-                self.text = pastedString.separate(every: 4, with: " ")
-                
-                if pastedString.count == 34 {
-                    stDelegate?.didFilled?(self)
-                }
-            }
+            _ = textField(self, shouldChangeCharactersIn: selectedUTF16Range(), replacementString: pastedString)
         default:
             super.paste(sender)
         }
@@ -949,11 +922,6 @@ private extension StringifyTextField {
 // MARK: - Private extension (.amount format)
 
 private extension StringifyTextField {
-    enum InputedCharacter {
-        case number
-        case separator
-    }
-    
     func applySumFormat() {
         if !currencyMark.isEmpty {
             self.text = self.text!.replacingOccurrences(of: currencyMark, with: "").trim()
@@ -980,60 +948,29 @@ private extension StringifyTextField {
     }
     
     func shouldChangeSumText(in range: NSRange, with string: String, and text: String) -> Bool {
-        // Removing characters
-        if string.isEmpty {
-            if text.count > 1 {
-                let possibleText = String(text.dropLast())
-                
-                if let lastCharacter = possibleText.last, String(lastCharacter) == decimalSeparator {
-                    self.text = possibleText
-                } else {
-                    if possibleText.toDouble() == .zero {
-                        self.text = possibleText
-                    } else {
-                        self.text = possibleText.ext.applyFormat(.custom(formatter: numberFormatter))
-                    }
-                }
-            } else {
-                self.text = (text as NSString).replacingCharacters(in: range, with: string)
-            }
-            
-            return false
-        }
-        
-        
-        // Format entered characters
-        let adjustedInputedCharacter: InputedCharacter
-        
-        if string.rangeOfCharacter(from: CharacterSet.decimalDigits) != nil {
-            adjustedInputedCharacter = .number
-        } else {
-            adjustedInputedCharacter = .separator
-        }
-        
-        if adjustedInputedCharacter == .separator && !text.contains(decimalSeparator) {
-            self.text = text + decimalSeparator
-        } else if adjustedInputedCharacter == .number {
-            let possibleText = text + string
-            
-            let amountParts = possibleText.components(separatedBy: decimalSeparator)
-            
-            if amountParts.count == 2 {
-                if let fraction = amountParts.last, fraction.count > maxFractionDigits {
-                    self.text = text
-                } else {
-                    self.text = (text as NSString).replacingCharacters(in: range, with: string)
-                }
-            } else {
-                let inputedText = possibleText.replacingOccurrences(of: " ", with: "")
-                
-                guard inputedText.count <= maxIntegerDigits else { return false }
-                
-                self.text = inputedText.ext.applyFormat(.custom(formatter: numberFormatter))
-            }
-        }
-        
-        return false
+        let sanitizer = TextSanitizer.Amount(
+            allowsDecimal: decimal,
+            decimalSeparator: decimalSeparator,
+            maxFractionDigits: Int(maxFractionDigits),
+            currencyMark: currencyMark
+        )
+        let normalizer = TextNormalizer.Amount(
+            allowsDecimal: decimal,
+            decimalSeparator: decimalSeparator,
+            maxIntegerDigits: Int(maxIntegerDigits),
+            maxFractionDigits: Int(maxFractionDigits),
+            groupsDigits: needGroupingSeparator
+        )
+        return applyMaskedChange(
+            text: text,
+            range: range,
+            replacement: string,
+            isContent: normalizer.isContent,
+            sanitize: sanitizer.sanitize,
+            format: normalizer.format,
+            filledCount: nil,
+            replacing: .pastedValue
+        )
     }
 }
 
@@ -1046,26 +983,34 @@ private extension StringifyTextField {
             .trim()
     }
     
-    func shouldChangeText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
-        if string.isEmpty {
-            self.text = (text as NSString).replacingCharacters(in: range, with: string)
-            return false
-        }
-        
-        let caretOffset = range.location + (string as NSString).length
-        let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
-        
-        if possibleText.count <= maxLength {
-            self.text = possibleText.replacingOccurrences(of: " ", with: "").separate(every: 4, with: " ")
-        }
-        
-        moveCursor(to: caretOffset)
-        
-        if possibleText.count == maxLength {
-            stDelegate?.didFilled?(self)
-        }
-        
-        return false
+    func shouldChangeCardText(in range: NSRange, with string: String, and text: String) -> Bool {
+        let digits = TextSanitizer.DecimalDigits()
+        let normalizer = TextNormalizer.Grouped(limit: 16, stride: 4)
+        return applyMaskedChange(
+            text: text,
+            range: range,
+            replacement: string,
+            isContent: digits.isDigit,
+            sanitize: digits.sanitize,
+            format: normalizer.format,
+            filledCount: 16,
+            replacing: .fullValue
+        )
+    }
+    
+    func shouldChangeIBANText(in range: NSRange, with string: String, and text: String) -> Bool {
+        let sanitizer = TextSanitizer.NonWhitespace()
+        let normalizer = TextNormalizer.Grouped(limit: 34, stride: 4)
+        return applyMaskedChange(
+            text: text,
+            range: range,
+            replacement: string,
+            isContent: sanitizer.isContent,
+            sanitize: sanitizer.sanitize,
+            format: normalizer.format,
+            filledCount: 34,
+            replacing: .iban(wholeNumberLength: 15)
+        )
     }
 }
 
@@ -1079,27 +1024,17 @@ private extension StringifyTextField {
     }
     
     func shouldChangeExpDate(in range: NSRange, with string: String, and text: String) -> Bool {
-        if string.isEmpty {
-            self.text = (text as NSString).replacingCharacters(in: range, with: string)
-            return false
-        }
-        
-        let caretOffset = range.location + (string as NSString).length
-        let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
-        
-        if possibleText.count == 2 {
-            self.text = possibleText + "/"
-        } else if possibleText.count <= 5 {
-            self.text = possibleText.replacingOccurrences(of: "/", with: "").separate(every: 2, with: "/")
-        }
-        
-        moveCursor(to: caretOffset)
-        
-        if possibleText.count == 5 {
-            stDelegate?.didFilled?(self)
-        }
-        
-        return false
+        let digits = TextSanitizer.DecimalDigits()
+        let normalizer = TextNormalizer.ExpirationDate()
+        return applyMaskedChange(
+            text: text,
+            range: range,
+            replacement: string,
+            isContent: digits.isDigit,
+            sanitize: digits.sanitize,
+            format: normalizer.format,
+            filledCount: 4
+        )
     }
 }
 
@@ -1113,25 +1048,17 @@ private extension StringifyTextField {
     }
     
     func shouldChangeCVV(in range: NSRange, with string: String, and text: String) -> Bool {
-        if string.isEmpty {
-            self.text = (text as NSString).replacingCharacters(in: range, with: string)
-            return false
-        }
-        
-        let caretOffset = range.location + (string as NSString).length
-        let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
-        
-        if possibleText.count <= 3 {
-            self.text = possibleText
-        }
-        
-        moveCursor(to: caretOffset)
-        
-        if possibleText.count == 3 {
-            stDelegate?.didFilled?(self)
-        }
-        
-        return false
+        let digits = TextSanitizer.DecimalDigits()
+        let normalizer = TextNormalizer.Limited(limit: 3)
+        return applyMaskedChange(
+            text: text,
+            range: range,
+            replacement: string,
+            isContent: digits.isDigit,
+            sanitize: digits.sanitize,
+            format: normalizer.format,
+            filledCount: 3
+        )
     }
 }
 
@@ -1515,9 +1442,66 @@ private extension StringifyTextField {
     }
 }
 
+// MARK: - Private extension (masked editing)
+
+private extension StringifyTextField {
+    func applyMaskedChange(
+        text: String,
+        range: NSRange,
+        replacement: String,
+        isContent: @escaping (Character) -> Bool,
+        sanitize: @escaping (String) -> String?,
+        format: @escaping (String) -> String?,
+        filledCount: Int?,
+        replacing: MaskedEdit.Replacing = .atCaret
+    ) -> Bool {
+        let edit = MaskedEdit(
+            isContent: isContent,
+            sanitize: sanitize,
+            format: format,
+            filledCount: filledCount,
+            replacing: replacing
+        )
+        guard let outcome = edit.outcome(
+            in: text,
+            range: range,
+            replacement: replacement,
+            isForwardDelete: isForwardDelete(range: range)
+        ) else {
+            return false
+        }
+        
+        self.text = outcome.text
+        moveCursor(to: outcome.caretOffset)
+        if outcome.isFilled {
+            stDelegate?.didFilled?(self)
+        }
+        return false
+    }
+    
+    func isForwardDelete(range: NSRange) -> Bool {
+        guard let selectedTextRange, range.length > 0 else { return false }
+        
+        let start = offset(from: beginningOfDocument, to: selectedTextRange.start)
+        let end = offset(from: beginningOfDocument, to: selectedTextRange.end)
+        return start == range.location && end == range.location
+    }
+}
+
 // MARK: - Private extension (cursor)
 
 private extension StringifyTextField {
+    func selectedUTF16Range() -> NSRange {
+        guard let selectedTextRange else {
+            let length = (text as NSString?)?.length ?? 0
+            return NSRange(location: length, length: 0)
+        }
+        
+        let location = offset(from: beginningOfDocument, to: selectedTextRange.start)
+        let end = offset(from: beginningOfDocument, to: selectedTextRange.end)
+        return NSRange(location: location, length: max(0, end - location))
+    }
+    
     /// Places the caret at a UTF-16 offset of the current text.
     /// The offset is resolved after the text is updated, so the position stays inside the new document.
     func moveCursor(to offset: Int) {
@@ -1648,9 +1632,9 @@ extension StringifyTextField: UITextFieldDelegate {
         case .amount:
             return shouldChangeSumText(in: range, with: string, and: text)
         case .creditCard:
-            return shouldChangeText(in: range, with: string, and: text, with: 19)
+            return shouldChangeCardText(in: range, with: string, and: text)
         case .IBAN:
-            return shouldChangeText(in: range, with: string, and: text, with: 42)
+            return shouldChangeIBANText(in: range, with: string, and: text)
         case .expDate:
             return shouldChangeExpDate(in: range, with: string, and: text)
         case .cvv:
