@@ -302,15 +302,38 @@ open class StringifyTextField: UITextField {
     @IBInspectable public var floatingPadding: CGFloat = 0
     
     /// Font for the floating placeholder.
-    /// When `attributedPlaceholder` contains font attributes, each run keeps its typeface
-    /// and is scaled so the largest font matches this font's point size.
+    /// When `floatingAttributedPlaceholder` contains font attributes, each run keeps its typeface,
+    /// including a custom font, and is scaled so the largest font matches this font's point size.
     /// Default value is `UIFont.systemFont(ofSize: 14)`.
     public var floatingPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14) {
         didSet {
-            syncFloatedLabelText()
+            updateFloatedPlaceholderText()
             if floatingPlaceholder {
                 setNeedsLayout()
             }
+        }
+    }
+
+    /// Attributed text of the floating placeholder.
+    /// Font runs are copied as set, so a custom font is not replaced by the text field font.
+    /// The largest font is scaled to `floatingPlaceholderFont`.
+    /// `InnerFloatedStringifyTextField` keeps those sizes until the label floats, then scales them to `floatedLabelFontSize`.
+    /// Foreground color still follows `floatingPlaceholderColor` and `floatingPlaceholderActiveColor`.
+    /// Setting `attributedPlaceholder` updates this value. A later rewrite that drops fonts for the same text does not.
+    public var floatingAttributedPlaceholder: NSAttributedString? {
+        didSet {
+            guard !isApplyingFloatingAttributedPlaceholder else { return }
+
+            if let current = floatingAttributedPlaceholder,
+               let copied = current.copy() as? NSAttributedString,
+               copied !== current {
+                isApplyingFloatingAttributedPlaceholder = true
+                floatingAttributedPlaceholder = copied
+                isApplyingFloatingAttributedPlaceholder = false
+            }
+
+            applyAttributedPlaceholder(floatingAttributedPlaceholder, updatesFloatingText: false)
+            updateFloatedPlaceholderText()
         }
     }
     
@@ -421,6 +444,9 @@ open class StringifyTextField: UITextField {
     private var isAdjustingCursor = false
     private var cursorAdjustmentID = 0
     private var isEditingActionsCustomized = false
+    private var isApplyingFloatingAttributedPlaceholder = false
+    private var isInsideAttributedPlaceholderSuper = false
+    private var isLayoutingFloatedPlaceholder = false
     
     // MARK: - Public properties
     
@@ -465,14 +491,26 @@ open class StringifyTextField: UITextField {
     
     open override var placeholder: String? {
         didSet {
-            syncFloatedLabelText()
+            guard !isInsideAttributedPlaceholderSuper, !isApplyingFloatingAttributedPlaceholder else { return }
+
+            if placeholder != floatingAttributedPlaceholder?.string {
+                isApplyingFloatingAttributedPlaceholder = true
+                floatingAttributedPlaceholder = nil
+                isApplyingFloatingAttributedPlaceholder = false
+            }
+            updateFloatedPlaceholderText()
         }
     }
     
     open override var attributedPlaceholder: NSAttributedString? {
-        didSet {
-            syncFloatedLabelText()
-        }
+        get { floatingAttributedPlaceholder ?? super.attributedPlaceholder }
+        set { applyAttributedPlaceholder(newValue, updatesFloatingText: true) }
+    }
+
+    /// Refreshes the floating placeholder after its text or font changes.
+    /// `InnerFloatedStringifyTextField` updates its inner label from here.
+    open func updateFloatedPlaceholderText() {
+        syncFloatedLabelText()
     }
     
     open override var textAlignment: NSTextAlignment {
@@ -586,7 +624,7 @@ open class StringifyTextField: UITextField {
         floatedLabel.alpha = 1
         floatedLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         floatedLabel.textAlignment = self.textAlignment
-        syncFloatedLabelText()
+        updateFloatedPlaceholderText()
         
         addSubview(floatedLabel)
         bringSubviewToFront(floatedLabel)
@@ -644,6 +682,9 @@ open class StringifyTextField: UITextField {
     }
     
     open override func layoutSubviews() {
+        isLayoutingFloatedPlaceholder = true
+        defer { isLayoutingFloatedPlaceholder = false }
+
         super.layoutSubviews()
         
         if case .line = style {
@@ -1363,12 +1404,47 @@ private extension StringifyTextField {
         return maximumFontLineHeight(in: attributedText, fallback: floatingPlaceholderFont) + 4.0
     }
 
+    func applyAttributedPlaceholder(_ newValue: NSAttributedString?, updatesFloatingText: Bool) {
+        if isInsideAttributedPlaceholderSuper { return }
+
+        let incoming = newValue?.copy() as? NSAttributedString
+        if updatesFloatingText && shouldKeepFloatingAttributedPlaceholder(insteadOf: incoming) {
+            return
+        }
+
+        if updatesFloatingText {
+            isApplyingFloatingAttributedPlaceholder = true
+            floatingAttributedPlaceholder = incoming
+            isApplyingFloatingAttributedPlaceholder = false
+        }
+
+        isInsideAttributedPlaceholderSuper = true
+        super.attributedPlaceholder = incoming
+        isInsideAttributedPlaceholderSuper = false
+
+        if updatesFloatingText {
+            updateFloatedPlaceholderText()
+        }
+    }
+
+    func shouldKeepFloatingAttributedPlaceholder(insteadOf incoming: NSAttributedString?) -> Bool {
+        guard let current = floatingAttributedPlaceholder, current.length > 0 else { return false }
+        guard let incoming, current.string == incoming.string else { return false }
+        guard containsFontAttribute(current) else { return false }
+
+        if !containsFontAttribute(incoming) {
+            return true
+        }
+
+        return isLayoutingFloatedPlaceholder
+    }
+
     func syncFloatedLabelText() {
         let color = floatedLabelColor(isActive: hasText && isFirstResponder)
 
-        if let attributedPlaceholder, attributedPlaceholder.length > 0 {
+        if let floatingAttributedPlaceholder, floatingAttributedPlaceholder.length > 0 {
             floatedLabel.attributedText = attributedStringForFloatedLabel(
-                attributedPlaceholder,
+                floatingAttributedPlaceholder,
                 fitting: floatingPlaceholderFont.pointSize,
                 fallbackFont: floatingPlaceholderFont,
                 color: color

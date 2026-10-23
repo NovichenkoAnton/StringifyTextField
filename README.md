@@ -142,9 +142,30 @@ and enable a floating placeholder:
 stringifyTextField.floatingPlaceholder = true
 stringifyTextField.floatingPlaceholderColor = UIColor.black
 stringifyTextField.floatingPlaceholderActiveColor = UIColor.blue
+stringifyTextField.floatingPlaceholderFont = UIFont.systemFont(ofSize: 14)
 ```
 
 ![bottom line and floating label](https://user-images.githubusercontent.com/8337067/78424011-3faf6f80-7673-11ea-993d-3c449fa4420c.gif)
+
+A plain `placeholder` is drawn with `floatingPlaceholderFont`. To keep a custom font, including different fonts in one placeholder, set `floatingAttributedPlaceholder`. Each font run keeps its typeface. The largest font is scaled to `floatingPlaceholderFont.pointSize`, and the others scale with it. Label color still comes from `floatingPlaceholderColor` and `floatingPlaceholderActiveColor`.
+
+```swift
+let regular = UIFont(name: "CustomFont-Regular", size: 18)!
+let bold = UIFont(name: "CustomFont-Bold", size: 18)!
+let placeholder = NSMutableAttributedString(
+    string: "Amount ",
+    attributes: [.font: regular]
+)
+placeholder.append(NSAttributedString(
+    string: "USD",
+    attributes: [.font: bold]
+))
+
+stringifyTextField.floatingAttributedPlaceholder = placeholder
+stringifyTextField.floatingPlaceholder = true
+```
+
+`attributedPlaceholder` updates the same value. The floated label keeps those fonts if the system later rewrites the placeholder without them.
 
 ### Inner floated text field
 
@@ -157,6 +178,13 @@ innerFloatedTextField.clearButtonMode = .whileEditing
 innerFloatedTextField.floatedLabelFontSize = 14
 innerFloatedTextField.floatingPlaceholderColor = UIColor.gray
 innerFloatedTextField.floatingPlaceholderActiveColor = UIColor.gray
+```
+
+`floatingAttributedPlaceholder` is the same property as on `StringifyTextField`. Until the label floats, font runs keep the sizes from the attributed string. After it floats, the largest font is scaled to `floatedLabelFontSize`.
+
+```swift
+innerFloatedTextField.floatingAttributedPlaceholder = placeholder
+innerFloatedTextField.floatedPlaceholderDisplay = .onInput
 ```
 
 The label can stay at the top or float up only after a value is entered:

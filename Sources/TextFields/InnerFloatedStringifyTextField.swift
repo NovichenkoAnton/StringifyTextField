@@ -105,18 +105,11 @@ open class InnerFloatedStringifyTextField: StringifyTextField {
 
     // MARK: - Overridden properties
 
-    open override var placeholder: String? {
-        didSet {
-            syncInnerFloatedLabel()
-        }
-    }
-
-    open override var attributedPlaceholder: NSAttributedString? {
-        didSet {
-            syncInnerFloatedLabel()
-            invalidateIntrinsicContentSize()
-            setNeedsLayout()
-        }
+    open override func updateFloatedPlaceholderText() {
+        super.updateFloatedPlaceholderText()
+        syncInnerFloatedLabel()
+        invalidateIntrinsicContentSize()
+        setNeedsLayout()
     }
 
     open override var textAlignment: NSTextAlignment {
@@ -277,9 +270,9 @@ private extension InnerFloatedStringifyTextField {
     func applyInnerFloatedLabelText(floated: Bool) {
         let color = usesActiveFloatedLabelColor ? floatingPlaceholderActiveColor : floatingPlaceholderColor
 
-        if let attributedPlaceholder, attributedPlaceholder.length > 0 {
+        if let floatingAttributedPlaceholder, floatingAttributedPlaceholder.length > 0 {
             innerFloatedLabel.attributedText = attributedStringForFloatedLabel(
-                attributedPlaceholder,
+                floatingAttributedPlaceholder,
                 fitting: floated ? floatedLabelFont.pointSize : nil,
                 fallbackFont: floated ? floatedLabelFont : valueFont,
                 color: color
@@ -294,12 +287,12 @@ private extension InnerFloatedStringifyTextField {
     }
 
     var floatedContentLineHeight: CGFloat {
-        guard let attributedPlaceholder, attributedPlaceholder.length > 0 else {
+        guard let floatingAttributedPlaceholder, floatingAttributedPlaceholder.length > 0 else {
             return floatedLabelFont.lineHeight
         }
 
         let styled = attributedStringForFloatedLabel(
-            attributedPlaceholder,
+            floatingAttributedPlaceholder,
             fitting: floatedLabelFont.pointSize,
             fallbackFont: floatedLabelFont,
             color: floatingPlaceholderColor
@@ -308,12 +301,12 @@ private extension InnerFloatedStringifyTextField {
     }
 
     var restingContentLineHeight: CGFloat {
-        guard let attributedPlaceholder, attributedPlaceholder.length > 0 else {
+        guard let floatingAttributedPlaceholder, floatingAttributedPlaceholder.length > 0 else {
             return valueFont.lineHeight
         }
 
         let styled = attributedStringForFloatedLabel(
-            attributedPlaceholder,
+            floatingAttributedPlaceholder,
             fitting: nil,
             fallbackFont: valueFont,
             color: floatingPlaceholderColor

@@ -8,6 +8,28 @@
 
 import UIKit
 
+func containsFontAttribute(_ string: NSAttributedString) -> Bool {
+    guard string.length > 0 else { return false }
+
+    var found = false
+    string.enumerateAttribute(.font, in: NSRange(location: 0, length: string.length)) { value, _, stop in
+        guard value is UIFont else { return }
+        found = true
+        stop.pointee = true
+    }
+    return found
+}
+
+/// Keeps the PostScript name of a custom font. `UIFont.withSize` can resolve that
+/// descriptor back to the system font.
+func fontMatching(_ font: UIFont, pointSize: CGFloat) -> UIFont {
+    guard abs(font.pointSize - pointSize) > 0.01 else { return font }
+    if let namedFont = UIFont(name: font.fontName, size: pointSize) {
+        return namedFont
+    }
+    return font.withSize(pointSize)
+}
+
 func attributedStringForFloatedLabel(_ source: NSAttributedString, fitting pointSize: CGFloat?, fallbackFont: UIFont, color: UIColor) -> NSAttributedString {
     let styled = NSMutableAttributedString(attributedString: source)
     let fullRange = NSRange(location: 0, length: styled.length)
@@ -33,9 +55,13 @@ func attributedStringForFloatedLabel(_ source: NSAttributedString, fitting point
     styled.enumerateAttribute(.font, in: fullRange) { value, range, _ in
         let font: UIFont
         if let existing = value as? UIFont {
-            font = scale == 1 ? existing : existing.withSize(existing.pointSize * scale)
+            if abs(scale - 1) < 0.001 {
+                font = existing
+            } else {
+                font = fontMatching(existing, pointSize: existing.pointSize * scale)
+            }
         } else if let pointSize {
-            font = fallbackFont.withSize(pointSize)
+            font = fontMatching(fallbackFont, pointSize: pointSize)
         } else {
             font = fallbackFont
         }

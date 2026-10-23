@@ -29,11 +29,11 @@ final class ViewController: UIViewController {
             amountTextField.style = .border(cornerRadius: 10)
             amountTextField.textType = .none
             amountTextField.maxSymbols = 5
-            amountTextField.attributedPlaceholder = NSAttributedString(
+            amountTextField.floatingAttributedPlaceholder = NSAttributedString(
                 string: NSLocalizedString("PLACEHOLDER", comment: ""),
                 attributes: [
                     .foregroundColor: UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1.00),
-                    .font: UIFont.systemFont(ofSize: 18)
+                    .font: UIFont(name: "Georgia", size: 18) ?? UIFont.systemFont(ofSize: 18)
                 ]
             )
             amountTextField.backgroundColor = UIColor.white.withAlphaComponent(0.4)
@@ -49,7 +49,6 @@ final class ViewController: UIViewController {
             amountTextField.trailingImage = UIImage(named: "image")
             amountTextField.tintAdjustmentMode = .automatic
             amountTextField.clearButtonMode = .whileEditing
-            amountTextField.isEnabled = false
             amountTextField.allowsTrailingActionWhenDisabled = true
 		}
 	}
@@ -58,15 +57,17 @@ final class ViewController: UIViewController {
         let innerFloatedTextField = InnerFloatedStringifyTextField(type: .amount, cornerRadius: 10)
         innerFloatedTextField.contentInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         innerFloatedTextField.stDelegate = self
+        let regularFont = UIFont(name: "Georgia", size: 17) ?? UIFont.systemFont(ofSize: 17)
+        let boldFont = UIFont(name: "Georgia-Bold", size: 17) ?? UIFont.boldSystemFont(ofSize: 17)
         let placeholder = NSMutableAttributedString(
             string: "Amount ",
-            attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .regular)]
+            attributes: [.font: regularFont]
         )
         placeholder.append(NSAttributedString(
             string: "USD",
-            attributes: [.font: UIFont.systemFont(ofSize: 17, weight: .bold)]
+            attributes: [.font: boldFont]
         ))
-        innerFloatedTextField.attributedPlaceholder = placeholder
+        innerFloatedTextField.floatingAttributedPlaceholder = placeholder
         innerFloatedTextField.floatedPlaceholderDisplay = .onInput
         innerFloatedTextField.trailingImage = UIImage(named: "image")
         innerFloatedTextField.font = UIFont.systemFont(ofSize: 17)
