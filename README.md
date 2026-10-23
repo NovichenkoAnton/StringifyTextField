@@ -7,16 +7,29 @@ Custom `UITextField` based on `Extendy` framework functionality.
 
 ## Requirements
 
-- iOS 12.0+
+- iOS 15.0+
+- Swift 5.4+
 
 ## Installation
 
+### Swift Package Manager
+
+Add the package in Xcode via File → Add Package Dependencies, or declare it in `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/NovichenkoAnton/StringifyTextField.git", .upToNextMajor(from: "1.4.0"))
+]
+```
+
+Add the `StringifyTextField` product to your target.
+
 ### CocoaPods
 
-StringifyTextField is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your Podfile:
+StringifyTextField is available through [CocoaPods](https://cocoapods.org). To install it, add the following line to your Podfile:
 
 ```ruby
-pod 'StringifyTextField', '~> 1.3'
+pod 'StringifyTextField', '~> 1.4'
 ```
 
 ## Usage
