@@ -29,6 +29,13 @@ final class ViewController: UIViewController {
             amountTextField.style = .border(cornerRadius: 10)
             amountTextField.textType = .none
             amountTextField.maxSymbols = 5
+            amountTextField.attributedPlaceholder = NSAttributedString(
+                string: NSLocalizedString("PLACEHOLDER", comment: ""),
+                attributes: [
+                    .foregroundColor: UIColor(red: 0.60, green: 0.64, blue: 0.73, alpha: 1.00),
+                    .font: UIFont.systemFont(ofSize: 18)
+                ]
+            )
             amountTextField.floatingAttributedPlaceholder = NSAttributedString(
                 string: NSLocalizedString("PLACEHOLDER", comment: ""),
                 attributes: [
@@ -67,6 +74,7 @@ final class ViewController: UIViewController {
             string: "USD",
             attributes: [.font: boldFont]
         ))
+        innerFloatedTextField.attributedPlaceholder = placeholder
         innerFloatedTextField.floatingAttributedPlaceholder = placeholder
         innerFloatedTextField.floatedPlaceholderDisplay = .onInput
         innerFloatedTextField.trailingImage = UIImage(named: "image")

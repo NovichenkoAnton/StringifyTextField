@@ -160,7 +160,7 @@ stringifyTextField.floatingPlaceholderFont = UIFont.systemFont(ofSize: 14)
 
 ![bottom line and floating label](https://user-images.githubusercontent.com/8337067/78424011-3faf6f80-7673-11ea-993d-3c449fa4420c.gif)
 
-A plain `placeholder` is drawn with `floatingPlaceholderFont`. To keep a custom font, including different fonts in one placeholder, set `floatingAttributedPlaceholder`. Each font run keeps its typeface. The largest font is scaled to `floatingPlaceholderFont.pointSize`, and the others scale with it. Label color still comes from `floatingPlaceholderColor` and `floatingPlaceholderActiveColor`.
+A plain `placeholder` on the floated label is drawn with `floatingPlaceholderFont`. To keep a custom font on that label, including different fonts in one string, set `floatingAttributedPlaceholder`. Each font run keeps its typeface. The largest font is scaled to `floatingPlaceholderFont.pointSize`, and the others scale with it. Label color still comes from `floatingPlaceholderColor` and `floatingPlaceholderActiveColor`. `attributedPlaceholder` is a separate string: it is the placeholder drawn in the field and does not change the floated label.
 
 ```swift
 let regular = UIFont(name: "CustomFont-Regular", size: 18)!
@@ -174,11 +174,12 @@ placeholder.append(NSAttributedString(
     attributes: [.font: bold]
 ))
 
+stringifyTextField.attributedPlaceholder = placeholder
 stringifyTextField.floatingAttributedPlaceholder = placeholder
 stringifyTextField.floatingPlaceholder = true
 ```
 
-`attributedPlaceholder` updates the same value. The floated label keeps those fonts if the system later rewrites the placeholder without them.
+`floatingAttributedPlaceholder` styles only the floated label. `attributedPlaceholder` styles only the placeholder in the field. A later system rewrite that drops fonts does not clear the fonts of the string it belongs to.
 
 ### Inner floated text field
 
@@ -193,9 +194,10 @@ innerFloatedTextField.floatingPlaceholderColor = UIColor.gray
 innerFloatedTextField.floatingPlaceholderActiveColor = UIColor.gray
 ```
 
-`floatingAttributedPlaceholder` is the same property as on `StringifyTextField`. Until the label floats, font runs keep the sizes from the attributed string. After it floats, the largest font is scaled to `floatedLabelFontSize`.
+`floatingAttributedPlaceholder` styles only the floated label. Its largest font is scaled to `floatedLabelFontSize`. `attributedPlaceholder` styles the placeholder in the field. With `.onInput`, that string keeps its own font sizes until a value is entered and the label floats.
 
 ```swift
+innerFloatedTextField.attributedPlaceholder = placeholder
 innerFloatedTextField.floatingAttributedPlaceholder = placeholder
 innerFloatedTextField.floatedPlaceholderDisplay = .onInput
 ```

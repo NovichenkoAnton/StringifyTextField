@@ -89,6 +89,36 @@ func maximumFontLineHeight(in attributedText: NSAttributedString, fallback: UIFo
     return maxLineHeight > 0 ? maxLineHeight : fallback.lineHeight
 }
 
+/// Field placeholder text. Keeps fonts and colors from `attributedPlaceholder`.
+/// Missing fonts and colors use the fallbacks.
+func attributedStringForFieldText(_ source: NSAttributedString, fallbackFont: UIFont, fallbackColor: UIColor) -> NSAttributedString {
+    let styled = NSMutableAttributedString(attributedString: source)
+    let fullRange = NSRange(location: 0, length: styled.length)
+    guard fullRange.length > 0 else { return styled }
+
+    var fontUpdates: [(NSRange, UIFont)] = []
+    styled.enumerateAttribute(.font, in: fullRange) { value, range, _ in
+        if !(value is UIFont) {
+            fontUpdates.append((range, fallbackFont))
+        }
+    }
+    for (range, font) in fontUpdates {
+        styled.addAttribute(.font, value: font, range: range)
+    }
+
+    var colorUpdates: [(NSRange, UIColor)] = []
+    styled.enumerateAttribute(.foregroundColor, in: fullRange) { value, range, _ in
+        if !(value is UIColor) {
+            colorUpdates.append((range, fallbackColor))
+        }
+    }
+    for (range, color) in colorUpdates {
+        styled.addAttribute(.foregroundColor, value: color, range: range)
+    }
+
+    return styled
+}
+
 func setFloatedLabelForegroundColor(_ color: UIColor, of label: UILabel) {
     guard let attributedText = label.attributedText, attributedText.length > 0 else {
         label.textColor = color

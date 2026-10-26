@@ -314,12 +314,12 @@ open class StringifyTextField: UITextField {
         }
     }
 
-    /// Attributed text of the floating placeholder.
+    /// Attributed text of the floated label.
     /// Font runs are copied as set, so a custom font is not replaced by the text field font.
     /// The largest font is scaled to `floatingPlaceholderFont`.
-    /// `InnerFloatedStringifyTextField` keeps those sizes until the label floats, then scales them to `floatedLabelFontSize`.
+    /// `InnerFloatedStringifyTextField` scales that label to `floatedLabelFontSize` while it is floated.
     /// Foreground color still follows `floatingPlaceholderColor` and `floatingPlaceholderActiveColor`.
-    /// Setting `attributedPlaceholder` updates this value. A later rewrite that drops fonts for the same text does not.
+    /// Does not change `attributedPlaceholder`.
     public var floatingAttributedPlaceholder: NSAttributedString? {
         didSet {
             guard !isApplyingFloatingAttributedPlaceholder else { return }
@@ -332,7 +332,6 @@ open class StringifyTextField: UITextField {
                 isApplyingFloatingAttributedPlaceholder = false
             }
 
-            applyAttributedPlaceholder(floatingAttributedPlaceholder, updatesFloatingText: false)
             updateFloatedPlaceholderText()
         }
     }
@@ -445,8 +444,12 @@ open class StringifyTextField: UITextField {
     private var cursorAdjustmentID = 0
     private var isEditingActionsCustomized = false
     private var isApplyingFloatingAttributedPlaceholder = false
-    private var isInsideAttributedPlaceholderSuper = false
+    private var isApplyingAttributedPlaceholder = false
     private var isLayoutingFloatedPlaceholder = false
+    /// Field placeholder kept after UIKit rewrites `attributedPlaceholder` without its fonts.
+    private var preservedAttributedPlaceholder: NSAttributedString?
+    /// `true` after an explicit `attributedPlaceholder` assignment. A plain `placeholder` leaves this `false`.
+    private var usesAttributedFieldPlaceholder = false
     
     // MARK: - Public properties
     
@@ -491,20 +494,33 @@ open class StringifyTextField: UITextField {
     
     open override var placeholder: String? {
         didSet {
-            guard !isInsideAttributedPlaceholderSuper, !isApplyingFloatingAttributedPlaceholder else { return }
+            guard !isApplyingAttributedPlaceholder else { return }
 
-            if placeholder != floatingAttributedPlaceholder?.string {
-                isApplyingFloatingAttributedPlaceholder = true
-                floatingAttributedPlaceholder = nil
-                isApplyingFloatingAttributedPlaceholder = false
+            usesAttributedFieldPlaceholder = false
+            if placeholder != preservedAttributedPlaceholder?.string {
+                preservedAttributedPlaceholder = nil
             }
             updateFloatedPlaceholderText()
         }
     }
-    
+
+    /// Attributed placeholder drawn as the field text.
+    /// `nil` when the field only has a plain `placeholder`.
+    func attributedFieldPlaceholder() -> NSAttributedString? {
+        guard usesAttributedFieldPlaceholder,
+              let preservedAttributedPlaceholder,
+              preservedAttributedPlaceholder.length > 0 else {
+            return nil
+        }
+        return preservedAttributedPlaceholder
+    }
+
+    /// Placeholder drawn in the field.
+    /// Custom fonts stay if UIKit later rewrites this string without them.
+    /// Does not change `floatingAttributedPlaceholder`.
     open override var attributedPlaceholder: NSAttributedString? {
-        get { floatingAttributedPlaceholder ?? super.attributedPlaceholder }
-        set { applyAttributedPlaceholder(newValue, updatesFloatingText: true) }
+        get { preservedAttributedPlaceholder ?? super.attributedPlaceholder }
+        set { applyAttributedPlaceholder(newValue) }
     }
 
     /// Refreshes the floating placeholder after its text or font changes.
@@ -1404,31 +1420,26 @@ private extension StringifyTextField {
         return maximumFontLineHeight(in: attributedText, fallback: floatingPlaceholderFont) + 4.0
     }
 
-    func applyAttributedPlaceholder(_ newValue: NSAttributedString?, updatesFloatingText: Bool) {
-        if isInsideAttributedPlaceholderSuper { return }
+    func applyAttributedPlaceholder(_ newValue: NSAttributedString?) {
+        if isApplyingAttributedPlaceholder { return }
 
         let incoming = newValue?.copy() as? NSAttributedString
-        if updatesFloatingText && shouldKeepFloatingAttributedPlaceholder(insteadOf: incoming) {
+        if isLayoutingFloatedPlaceholder || shouldKeepAttributedPlaceholder(insteadOf: incoming) {
             return
         }
 
-        if updatesFloatingText {
-            isApplyingFloatingAttributedPlaceholder = true
-            floatingAttributedPlaceholder = incoming
-            isApplyingFloatingAttributedPlaceholder = false
-        }
+        preservedAttributedPlaceholder = incoming
+        usesAttributedFieldPlaceholder = (incoming?.length ?? 0) > 0
 
-        isInsideAttributedPlaceholderSuper = true
+        isApplyingAttributedPlaceholder = true
         super.attributedPlaceholder = incoming
-        isInsideAttributedPlaceholderSuper = false
+        isApplyingAttributedPlaceholder = false
 
-        if updatesFloatingText {
-            updateFloatedPlaceholderText()
-        }
+        updateFloatedPlaceholderText()
     }
 
-    func shouldKeepFloatingAttributedPlaceholder(insteadOf incoming: NSAttributedString?) -> Bool {
-        guard let current = floatingAttributedPlaceholder, current.length > 0 else { return false }
+    func shouldKeepAttributedPlaceholder(insteadOf incoming: NSAttributedString?) -> Bool {
+        guard let current = preservedAttributedPlaceholder, current.length > 0 else { return false }
         guard let incoming, current.string == incoming.string else { return false }
         guard containsFontAttribute(current) else { return false }
 

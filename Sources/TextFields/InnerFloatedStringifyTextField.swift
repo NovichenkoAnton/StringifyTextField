@@ -268,21 +268,45 @@ private extension InnerFloatedStringifyTextField {
     }
 
     func applyInnerFloatedLabelText(floated: Bool) {
+        if floated {
+            applyFloatedLabelText()
+        } else {
+            applyFieldPlaceholderText()
+        }
+    }
+
+    func applyFloatedLabelText() {
         let color = usesActiveFloatedLabelColor ? floatingPlaceholderActiveColor : floatingPlaceholderColor
 
         if let floatingAttributedPlaceholder, floatingAttributedPlaceholder.length > 0 {
             innerFloatedLabel.attributedText = attributedStringForFloatedLabel(
                 floatingAttributedPlaceholder,
-                fitting: floated ? floatedLabelFont.pointSize : nil,
-                fallbackFont: floated ? floatedLabelFont : valueFont,
+                fitting: floatedLabelFont.pointSize,
+                fallbackFont: floatedLabelFont,
                 color: color
             )
             return
         }
 
         innerFloatedLabel.attributedText = nil
-        innerFloatedLabel.font = floated ? floatedLabelFont : valueFont
+        innerFloatedLabel.font = floatedLabelFont
         innerFloatedLabel.textColor = color
+        innerFloatedLabel.text = placeholder
+    }
+
+    func applyFieldPlaceholderText() {
+        if let attributedPlaceholder = attributedFieldPlaceholder() {
+            innerFloatedLabel.attributedText = attributedStringForFieldText(
+                attributedPlaceholder,
+                fallbackFont: valueFont,
+                fallbackColor: floatingPlaceholderColor
+            )
+            return
+        }
+
+        innerFloatedLabel.attributedText = nil
+        innerFloatedLabel.font = valueFont
+        innerFloatedLabel.textColor = floatingPlaceholderColor
         innerFloatedLabel.text = placeholder
     }
 
@@ -301,15 +325,14 @@ private extension InnerFloatedStringifyTextField {
     }
 
     var restingContentLineHeight: CGFloat {
-        guard let floatingAttributedPlaceholder, floatingAttributedPlaceholder.length > 0 else {
+        guard let attributedPlaceholder = attributedFieldPlaceholder() else {
             return valueFont.lineHeight
         }
 
-        let styled = attributedStringForFloatedLabel(
-            floatingAttributedPlaceholder,
-            fitting: nil,
+        let styled = attributedStringForFieldText(
+            attributedPlaceholder,
             fallbackFont: valueFont,
-            color: floatingPlaceholderColor
+            fallbackColor: floatingPlaceholderColor
         )
         return maximumFontLineHeight(in: styled, fallback: valueFont)
     }
@@ -390,6 +413,8 @@ private extension InnerFloatedStringifyTextField {
     }
 
     func updateInnerFloatedLabelColor(animated: Bool) {
+        guard isFloatedLabelAtTop else { return }
+
         let color = usesActiveFloatedLabelColor ? floatingPlaceholderActiveColor : floatingPlaceholderColor
         let animationBlock = {
             setFloatedLabelForegroundColor(color, of: self.innerFloatedLabel)
