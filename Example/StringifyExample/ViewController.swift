@@ -15,6 +15,7 @@ final class ViewController: UIViewController {
     @IBOutlet var stringifyTextField: StringifyTextField! {
         didSet {
             stringifyTextField.style = .native(borderStyle: .roundedRect)
+            stringifyTextField.autocapitalizationType = .sentences
         }
     }
 	@IBOutlet var valueLabel: UILabel!

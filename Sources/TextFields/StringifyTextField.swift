@@ -440,8 +440,6 @@ open class StringifyTextField: UITextField {
     
     private var isShowingError = false
     private var errorWorkItem: DispatchWorkItem?
-    private var isAdjustingCursor = false
-    private var cursorAdjustmentID = 0
     private var isEditingActionsCustomized = false
     private var isApplyingFloatingAttributedPlaceholder = false
     private var isApplyingAttributedPlaceholder = false
@@ -1124,10 +1122,7 @@ private extension StringifyTextField {
 private extension StringifyTextField {
     func shouldChangeRawText(in range: NSRange, with string: String, and text: String, with maxLength: Int) -> Bool {
         if string.isEmpty {
-            let newText = (text as NSString).replacingCharacters(in: range, with: string)
-            self.text = newText
-            moveCursor(to: range.location)
-            return false
+            return true
         }
         
         if let pattern, !string.validate(with: pattern) {
@@ -1137,20 +1132,17 @@ private extension StringifyTextField {
         let possibleText = (text as NSString).replacingCharacters(in: range, with: string)
         
         if possibleText.count > maxLength {
-            if let selectedTextRange {
-                updateCursor(selectedTextRange)
-            }
             return false
         }
         
-        self.text = possibleText
-        moveCursor(to: range.location + (string as NSString).length)
-        
         if possibleText.count == maxLength {
-            stDelegate?.didFilled?(self)
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.stDelegate?.didFilled?(self)
+            }
         }
         
-        return false
+        return true
     }
 }
 
@@ -1532,16 +1524,7 @@ private extension StringifyTextField {
 // MARK: - Private extension (masked editing)
 
 private extension StringifyTextField {
-    func applyMaskedChange(
-        text: String,
-        range: NSRange,
-        replacement: String,
-        isContent: @escaping (Character) -> Bool,
-        sanitize: @escaping (String) -> String?,
-        format: @escaping (String) -> String?,
-        filledCount: Int?,
-        replacing: MaskedEdit.Replacing = .atCaret
-    ) -> Bool {
+    func applyMaskedChange(text: String, range: NSRange, replacement: String, isContent: @escaping (Character) -> Bool, sanitize: @escaping (String) -> String?, format: @escaping (String) -> String?, filledCount: Int?, replacing: MaskedEdit.Replacing = .atCaret) -> Bool {
         let edit = MaskedEdit(
             isContent: isContent,
             sanitize: sanitize,
@@ -1599,88 +1582,15 @@ private extension StringifyTextField {
         updateCursor(range)
     }
 
-    /// UIKit enables Shift when `selectedTextRange` changes.
-    /// The next typed character then becomes uppercase, including after a caret move in the middle of a word.
-    /// Autocapitalization is suspended for that assignment unless the caret is at a position that should stay capitalized.
+    /// Places the caret at the given text range.
     func updateCursor(_ range: UITextRange) {
-        let suppressShift = shouldSuppressAutocapitalization(for: range)
-        let autocapitalization = autocapitalizationType
-
-        isAdjustingCursor = true
-        if suppressShift {
-            autocapitalizationType = .none
-        }
         selectedTextRange = range
-        if suppressShift {
-            autocapitalizationType = autocapitalization
-        }
-        isAdjustingCursor = false
-    }
-
-    func shouldSuppressAutocapitalization(for range: UITextRange) -> Bool {
-        switch autocapitalizationType {
-        case .sentences, .words:
-            guard markedTextRange == nil else { return false }
-            let caretOffset = offset(from: beginningOfDocument, to: range.start)
-            return !shouldAutocapitalize(at: caretOffset)
-        default:
-            return false
-        }
-    }
-
-    func shouldAutocapitalize(at caretOffset: Int) -> Bool {
-        guard caretOffset > 0, let text, !text.isEmpty else { return true }
-
-        let nsText = text as NSString
-        guard caretOffset <= nsText.length else { return false }
-
-        let prefix = nsText.substring(to: caretOffset)
-        guard let last = prefix.last else { return true }
-
-        switch autocapitalizationType {
-        case .words:
-            return last.isWhitespace || last.isNewline
-        case .sentences:
-            if last.isNewline { return true }
-            guard last.isWhitespace else { return false }
-
-            let trimmed = prefix.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard let terminator = trimmed.last else { return true }
-            return ".!?…".contains(terminator)
-        default:
-            return false
-        }
-    }
-
-    func suppressAutocapitalizationForCurrentCaret() {
-        guard !isAdjustingCursor, markedTextRange == nil else { return }
-        guard let selectedTextRange, shouldSuppressAutocapitalization(for: selectedTextRange) else { return }
-
-        let autocapitalization = autocapitalizationType
-        isAdjustingCursor = true
-        autocapitalizationType = .none
-        self.selectedTextRange = selectedTextRange
-        autocapitalizationType = autocapitalization
-        isAdjustingCursor = false
     }
 }
 
 // MARK: - UITextFieldDelegate
 
 extension StringifyTextField: UITextFieldDelegate {
-    @available(iOS 13.0, *)
-    open func textFieldDidChangeSelection(_ textField: UITextField) {
-        guard !isAdjustingCursor else { return }
-        guard let selectedTextRange, shouldSuppressAutocapitalization(for: selectedTextRange) else { return }
-
-        cursorAdjustmentID += 1
-        let adjustmentID = cursorAdjustmentID
-        DispatchQueue.main.async { [weak self] in
-            guard let self, self.cursorAdjustmentID == adjustmentID else { return }
-            self.suppressAutocapitalizationForCurrentCaret()
-        }
-    }
-
     open func textFieldDidBeginEditing(_ textField: UITextField) {
         if case .line = style {
             activateBottomLine()
