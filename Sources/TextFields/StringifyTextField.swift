@@ -737,13 +737,24 @@ open class StringifyTextField: UITextField {
         
         switch textType {
         case .creditCard, .IBAN:
-            guard UIPasteboard.general.hasStrings, let pastedString = UIPasteboard.general.string else {
+            guard let pastedString = UIPasteboard.general.string, !pastedString.isEmpty else {
                 return
             }
             _ = textField(self, shouldChangeCharactersIn: selectedUTF16Range(), replacementString: pastedString)
         default:
             super.paste(sender)
         }
+    }
+
+    open override func cut(_ sender: Any?) {
+        guard allowsEditingAction(#selector(cut(_:))) else { return }
+
+        let selectedText = selectedTextRange.flatMap { text(in: $0) }
+        let textBeforeCut = text
+        super.cut(sender)
+
+        guard let selectedText, !selectedText.isEmpty, text != textBeforeCut else { return }
+        UIPasteboard.general.string = selectedText
     }
     
     open override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
