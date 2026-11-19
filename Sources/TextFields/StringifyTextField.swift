@@ -250,7 +250,12 @@ open class StringifyTextField: UITextField {
     
     /// Color for error state.
     /// Default value is `UIColor.red`.
-    @IBInspectable public var errorColor: UIColor = UIColor.red
+    /// Applied to the whole `errorAttributedMessage`, including runs that bring their own color.
+    @IBInspectable public var errorColor: UIColor = UIColor.red {
+        didSet {
+            applyErrorLabelText()
+        }
+    }
 
     /// Error display duration before auto-hiding.
     /// Default value is `1.0`.
@@ -262,9 +267,40 @@ open class StringifyTextField: UITextField {
     
     /// Error message to display.
     /// Default value is an empty string.
+    /// Setting this clears `errorAttributedMessage`.
     @IBInspectable public var errorMessage: String = "" {
         didSet {
-            errorLabel.text = errorMessage
+            guard !isApplyingErrorMessage else { return }
+
+            isApplyingErrorAttributedMessage = true
+            errorAttributedMessage = nil
+            isApplyingErrorAttributedMessage = false
+            applyErrorLabelText()
+        }
+    }
+
+    /// Attributed error message.
+    /// Each font run is copied as set, so a custom face registered only in the app stays on the label.
+    /// Runs without a font use `errorLabelFont`. The text color is `errorColor`.
+    /// Setting this also updates `errorMessage` with the plain string.
+    public var errorAttributedMessage: NSAttributedString? {
+        didSet {
+            guard !isApplyingErrorAttributedMessage else { return }
+
+            if let current = errorAttributedMessage,
+               let copied = current.copy() as? NSAttributedString,
+               copied !== current {
+                isApplyingErrorAttributedMessage = true
+                errorAttributedMessage = copied
+                isApplyingErrorAttributedMessage = false
+            }
+
+            if let errorAttributedMessage {
+                isApplyingErrorMessage = true
+                errorMessage = errorAttributedMessage.string
+                isApplyingErrorMessage = false
+            }
+            applyErrorLabelText()
         }
     }
     
@@ -391,10 +427,11 @@ open class StringifyTextField: UITextField {
     }
     
     /// Font for error label.
+    /// Used for a plain `errorMessage`, and for runs of `errorAttributedMessage` that have no font.
     /// Default value is `UIFont.systemFont(ofSize: 14)`.
     public var errorLabelFont: UIFont = UIFont.systemFont(ofSize: 14) {
         didSet {
-            errorLabel.font = errorLabelFont
+            applyErrorLabelText()
         }
     }
     
@@ -444,6 +481,8 @@ open class StringifyTextField: UITextField {
     private var isApplyingFloatingAttributedPlaceholder = false
     private var isApplyingAttributedPlaceholder = false
     private var isLayoutingFloatedPlaceholder = false
+    private var isApplyingErrorMessage = false
+    private var isApplyingErrorAttributedMessage = false
     /// Field placeholder kept after UIKit rewrites `attributedPlaceholder` without its fonts.
     private var preservedAttributedPlaceholder: NSAttributedString?
     /// `true` after an explicit `attributedPlaceholder` assignment. A plain `placeholder` leaves this `false`.
@@ -889,7 +928,7 @@ open class StringifyTextField: UITextField {
         
         isShowingError = true
         
-        errorLabel.text = errorMessage
+        applyErrorLabelText()
         
         animateToErrorState()
         showErrorLabel()
@@ -1384,8 +1423,25 @@ private extension StringifyTextField {
         }
     }
     
+    private func applyErrorLabelText() {
+        if let errorAttributedMessage, errorAttributedMessage.length > 0 {
+            errorLabel.attributedText = attributedStringForErrorLabel(
+                errorAttributedMessage,
+                fallbackFont: errorLabelFont,
+                color: errorColor
+            )
+            return
+        }
+
+        errorLabel.attributedText = nil
+        errorLabel.font = errorLabelFont
+        errorLabel.textColor = errorColor
+        errorLabel.text = errorMessage
+    }
+
     private func showErrorLabel() {
-        guard showsErrorLabel && !errorMessage.isEmpty else { return }
+        let hasAttributedMessage = (errorAttributedMessage?.length ?? 0) > 0
+        guard showsErrorLabel && (hasAttributedMessage || !errorMessage.isEmpty) else { return }
         
         if errorLabel.superview == nil {
             setupErrorLabel()

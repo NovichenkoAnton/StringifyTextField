@@ -50,9 +50,9 @@ final class ViewController: UIViewController {
             amountTextField.floatingPlaceholder = true
             amountTextField.errorDisplayDuration = 1.5
             amountTextField.errorColor = UIColor(red: 1.00, green: 0.27, blue: 0.23, alpha: 1.00)
-            amountTextField.errorMessage = "Some error"
             amountTextField.errorLabelTopPadding = 10
             amountTextField.errorLabelFont = UIFont.systemFont(ofSize: 12)
+            amountTextField.errorAttributedMessage = errorMessage(text: "Минимум 1 ", symbol: "Br")
             amountTextField.pattern = .own(pattern: "[A-Za-z0-9]")
             amountTextField.trailingImage = UIImage(named: "image")
             amountTextField.tintAdjustmentMode = .automatic
@@ -277,7 +277,16 @@ final class ViewController: UIViewController {
     
     @IBAction func showError(_ sender: Any) {
         amountTextField.showError()
-        innerFloatedTextField.showError(message: "Error 2")
+        innerFloatedTextField.errorAttributedMessage = errorMessage(text: "Минимум 1 ", symbol: "Br")
+        innerFloatedTextField.showError()
+    }
+
+    private func errorMessage(text: String, symbol: String) -> NSAttributedString {
+        let textFont = UIFont(name: "Georgia", size: 12) ?? UIFont.systemFont(ofSize: 12)
+        let symbolFont = UIFont(name: "Georgia-Bold", size: 12) ?? UIFont.boldSystemFont(ofSize: 12)
+        let message = NSMutableAttributedString(string: text, attributes: [.font: textFont])
+        message.append(NSAttributedString(string: symbol, attributes: [.font: symbolFont]))
+        return message
     }
 
 	private func applyEditingActions() {

@@ -233,6 +233,26 @@ stringifyTextField.showError(for: 5.0)
 stringifyTextField.hideError()
 ```
 
+`errorAttributedMessage` draws the error with the fonts stored in the string. A face that exists only in the app, such as a font that paints the Belarusian ruble sign, stays on its run. Runs without a font use `errorLabelFont`. The label color is `errorColor`.
+
+```swift
+let textFont = UIFont(name: "AppText-Regular", size: 12)!
+let rubleFont = UIFont(name: "AppRuble-Sign", size: 12)!
+let message = NSMutableAttributedString(
+    string: "Минимум 1 ",
+    attributes: [.font: textFont]
+)
+message.append(NSAttributedString(
+    string: "Br",
+    attributes: [.font: rubleFont]
+))
+
+stringifyTextField.errorAttributedMessage = message
+stringifyTextField.showError()
+```
+
+Setting `errorMessage` replaces the attributed message with one font, `errorLabelFont`.
+
 ## Demo
 You can see other features in the example project.
 
