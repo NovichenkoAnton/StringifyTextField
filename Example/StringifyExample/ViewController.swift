@@ -276,9 +276,8 @@ final class ViewController: UIViewController {
 	}
     
     @IBAction func showError(_ sender: Any) {
-        amountTextField.showError()
-        innerFloatedTextField.errorAttributedMessage = errorMessage(text: "Минимум 1 ", symbol: "Br")
-        innerFloatedTextField.showError()
+        amountTextField.showError(attributedMessage: errorMessage(text: "Минимум 1 ", symbol: "Br"), duration: 1.5)
+        innerFloatedTextField.showError(attributedMessage: errorMessage(text: "Минимум 1 ", symbol: "Br"), duration: 1.5)
     }
 
     private func errorMessage(text: String, symbol: String) -> NSAttributedString {

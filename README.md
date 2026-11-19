@@ -247,11 +247,12 @@ message.append(NSAttributedString(
     attributes: [.font: rubleFont]
 ))
 
-stringifyTextField.errorAttributedMessage = message
-stringifyTextField.showError()
+stringifyTextField.showError(attributedMessage: message)
+// or
+stringifyTextField.showError(attributedMessage: message, duration: 5)
 ```
 
-Setting `errorMessage` replaces the attributed message with one font, `errorLabelFont`.
+`duration` hides the error after that many seconds. Omit it to use `errorDisplayDuration`. A plain message takes the same option: `showError(message:duration:)`. Setting `errorMessage` replaces the attributed message with one font, `errorLabelFont`.
 
 ## Demo
 You can see other features in the example project.

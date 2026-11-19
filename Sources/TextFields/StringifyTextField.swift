@@ -913,12 +913,20 @@ open class StringifyTextField: UITextField {
     
     // MARK: - Public API
     
-    public func showError(message: String? = nil) {
+    public func showError(message: String? = nil, duration: Double? = nil) {
         if let message {
             self.errorMessage = message
         }
         
-        showError(for: errorDisplayDuration)
+        showError(for: duration ?? errorDisplayDuration)
+    }
+    
+    /// Shows `attributedMessage` immediately.
+    /// Font runs stay as set. Pass `duration` to hide the error after that many seconds.
+    /// Without it, the label stays for `errorDisplayDuration`.
+    public func showError(attributedMessage: NSAttributedString, duration: Double? = nil) {
+        self.errorAttributedMessage = attributedMessage
+        showError(for: duration ?? errorDisplayDuration)
     }
     
     public func showError(for duration: Double) {
@@ -938,7 +946,7 @@ open class StringifyTextField: UITextField {
         }
         errorWorkItem = workItem
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + errorDisplayDuration, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: workItem)
     }
     
     public func hideError() {
